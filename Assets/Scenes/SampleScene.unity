@@ -168,7 +168,6 @@ MonoBehaviour:
   strafeChangeIntervalMax: 2
   attackCooldown: 2
   attackChancePerCheck: 0.2
-  attackDuration: 1.8
   attackCheckInterval: 0.25
 --- !u!143 &328356445
 CharacterController:

@@ -22,7 +22,6 @@ public class Enemy : MonoBehaviour
     [Header("Attack")]
     public float attackCooldown = 2.0f;
     public float attackChancePerCheck = 0.35f;  // 0..1
-    public float attackDuration = 0.6f;         // how long we stay in Attack state
     public float attackCheckInterval = 0.25f;   // don't roll RNG every physics tick
 
     private Rigidbody rb;
@@ -35,13 +34,21 @@ public class Enemy : MonoBehaviour
     private float nextStrafeChangeTime = 0f;
 
     private float nextAttackTime = 0f;
-    private float attackEndTime = 0f;
     private float nextAttackCheckTime = 0f;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        if (rb == null)
+        {
+            Debug.LogError($"No RigidBody on {this.name}");
+        }
         anim = GetComponentInChildren<Animator>();
+        if (anim == null)
+        {
+            Debug.LogError($"No Animator on {this.name}");
+        }
     }
 
     void FixedUpdate()
@@ -68,8 +75,10 @@ public class Enemy : MonoBehaviour
         // ----- State transitions -----
         if (state == State.Attack)
         {
-            if (now >= attackEndTime)
-                state = State.Hold; // after attack, go back to strafing/holding distance
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack") && !anim.IsInTransition(0))
+            {
+                state = State.Hold;
+            }
         }
         else
         {
@@ -89,7 +98,6 @@ public class Enemy : MonoBehaviour
                 if (Random.value < attackChancePerCheck)
                 {
                     state = State.Attack;
-                    attackEndTime = now + attackDuration;
                     nextAttackTime = now + attackCooldown;
 
                     if (anim != null)
