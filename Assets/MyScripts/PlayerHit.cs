@@ -5,7 +5,7 @@ public class PlayerHit : MonoBehaviour
 {
     public float damageMultiplier = 1f;
     public float minPunchSpeed = 0.8f;
-    public float maxDamage = 25f;
+    public float baseDamage = 10f;
 
     // Prevent multiple hits from the same fist during continuous contact
     public float hitCooldownSeconds = 0.25f;
@@ -28,16 +28,6 @@ public class PlayerHit : MonoBehaviour
         TryApplyHit(collision);
     }
 
-    //private void OnCollisionStay(Collision collision)
-    //{
-    //    Debug.LogWarning("STAY with " + collision.collider.name);
-    //}
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    Debug.LogWarning("TRIGGER with " + other.name);
-    //}
-
     private void TryApplyHit(Collision collision)
     {
         var contact = collision.GetContact(0);
@@ -54,25 +44,21 @@ public class PlayerHit : MonoBehaviour
         if (_nextAllowedHitTime.TryGetValue(id, out float nextTime) && now < nextTime)
             return;
 
-        var tracker = hitter.GetComponent<HandVelocityTracker>();
-        float speed;
-
-        if (tracker == null) speed = 1f;
-        else speed = tracker.Velocity.magnitude;
-
-        if (speed < minPunchSpeed) return;
+        var enemy = hitter.GetComponentInParent<Enemy>();
+        if (enemy == null || !enemy.CanDealDamageNow())
+            return;
 
         // Hit zone multiplier from the TARGET collider
         HitZone zone = contact.thisCollider.GetComponent<HitZone>();
         float zoneMultiplier = zone != null ? zone.damageMultiplier : 1f;
 
-        float damage = Mathf.Min(speed * damageMultiplier * 10f * zoneMultiplier, maxDamage);
+        float damage = baseDamage * zoneMultiplier;
+        Debug.Log($"base damage = {baseDamage}\nzone multiplier = {zoneMultiplier}\ndamage = {damage}");
 
-        Debug.Log($"HIT: \"{hitter.name}\" hit \"{contact.thisCollider.name}\" speed={speed:F2} damage={damage:F1}");
+
+        Debug.Log($"HIT: \"{hitter.name}\" hit \"{contact.thisCollider.name}\" damage={damage:F1}");
         _health?.TakeDamage(damage);
 
         _nextAllowedHitTime[id] = now + hitCooldownSeconds;
     }
-
-
 }

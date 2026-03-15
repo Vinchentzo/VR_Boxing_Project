@@ -150,4 +150,11 @@ public class Enemy : MonoBehaviour
 
         rb.MovePosition(newPos);
     }
+
+    public bool CanDealDamageNow()
+    {
+        if (anim == null) return false;
+
+        return anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack") && !anim.IsInTransition(0);
+    }
 }
