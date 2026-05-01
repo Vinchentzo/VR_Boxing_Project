@@ -36,6 +36,8 @@ public class Enemy : MonoBehaviour
     private float nextAttackTime = 0f;
     private float nextAttackCheckTime = 0f;
 
+    private float fixedY;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -49,6 +51,8 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError($"No Animator on {this.name}");
         }
+
+        fixedY = rb.position.y;
     }
 
     void FixedUpdate()
@@ -141,12 +145,17 @@ public class Enemy : MonoBehaviour
         if (anim != null)
             anim.SetFloat("Speed", move.magnitude);
 
+        // Stop collision impulses from accumulating and making the enemy drift/spin.
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
         // Apply movement once
         Vector3 newPos = rb.position + move * Time.fixedDeltaTime;
 
         // Clamp arena bounds (XZ)
         newPos.x = Mathf.Clamp(newPos.x, arenaMin.x, arenaMax.x);
         newPos.z = Mathf.Clamp(newPos.z, arenaMin.y, arenaMax.y);
+        newPos.y = fixedY;
 
         rb.MovePosition(newPos);
     }

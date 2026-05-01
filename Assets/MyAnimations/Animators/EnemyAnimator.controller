@@ -268,7 +268,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Scary Clown Walk
+  m_Name: Step forward
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -283,7 +283,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -203655887218126122, guid: 5d938102399415449abe9fd8d65eab5d,
+  m_Motion: {fileID: -203655887218126122, guid: 177262ea6088c9445a5b1dd1d8f10081,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
