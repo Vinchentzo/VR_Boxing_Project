@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c370fdc095945594c9fb246ba9bc2ca1
+guid: 5a63951fe06e86349bd29f5487d3a8ef
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,11 +33,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Boxing Punch
+      name: boxing punch
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 54
+      lastFrame: 57
       wrapMode: 0
       orientationOffsetY: -30
       level: 0
