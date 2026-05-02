@@ -14,16 +14,13 @@ public class PlayerDamageEffects : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI koText;
 
     [Header("Low Health Vignette")]
-    [SerializeField] private float maxLowHealthIntensity = 0.45f;
-    [SerializeField] private float lowHealthPower = 1.6f;
+    [SerializeField] private float maxLowHealthIntensity = 0.65f;
 
     [Header("Hit Flash")]
     [SerializeField] private float hitFlashIntensity = 0.25f;
-    [SerializeField] private float hitFlashFadeSpeed = 2.5f;
 
     [Header("KO Fade")]
-    [SerializeField] private float fadeToWhiteTime = 0.35f;
-    [SerializeField] private float fadeWhiteToBlackTime = 1.25f;
+    [SerializeField] private float fadeToKOScreen = 0.35f; // used ones to fade to white, then second time to fade to black
     [SerializeField] private float restartDelayAfterBlack = 5f;
 
     private Vignette vignette;
@@ -108,7 +105,7 @@ public class PlayerDamageEffects : MonoBehaviour
         flashIntensity = Mathf.MoveTowards(
             flashIntensity,
             0f,
-            hitFlashFadeSpeed * Time.deltaTime
+            Time.deltaTime
         );
 
         float finalIntensity = Mathf.Clamp01(lowHealthIntensity + flashIntensity);
@@ -129,12 +126,9 @@ public class PlayerDamageEffects : MonoBehaviour
 
     private void UpdateLowHealthIntensity(float currentHealth)
     {
-        float health01 = Mathf.Clamp01(currentHealth / playerHealth.maxHealth);
-        float damage01 = 1f - health01;
+        float healthLost = 1f - Mathf.Clamp01(currentHealth / playerHealth.maxHealth);
 
-        float curvedDamage = Mathf.Pow(damage01, lowHealthPower);
-
-        lowHealthIntensity = curvedDamage * maxLowHealthIntensity;
+        lowHealthIntensity = healthLost * maxLowHealthIntensity;
     }
 
     private void HandleKO()
@@ -158,27 +152,27 @@ public class PlayerDamageEffects : MonoBehaviour
         float t = 0f;
 
         // Fade transparent -> white.
-        while (t < fadeToWhiteTime)
+        while (t < fadeToKOScreen)
         {
             t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / fadeToWhiteTime);
+            float a = Mathf.Clamp01(t / fadeToKOScreen);
 
-            fullFadeImage.color = new Color(1f, 1f, 1f, a);
+            //slightly gray color like e small flash
+            fullFadeImage.color = new Color(0.01f, 0.01f, 0.01f, a);
 
             yield return null;
         }
 
-        fullFadeImage.color = Color.white;
-
         // Fade white -> black.
         t = 0f;
 
-        while (t < fadeWhiteToBlackTime)
+        while (t < fadeToKOScreen)
         {
             t += Time.deltaTime;
-            float progress = Mathf.Clamp01(t / fadeWhiteToBlackTime);
+            float progress = Mathf.Clamp01(t / fadeToKOScreen);
 
-            Color color = Color.Lerp(Color.white, Color.black, progress);
+            Color prev_color = fullFadeImage.color;
+            Color color = Color.Lerp(prev_color, Color.black, progress);
             color.a = 1f;
 
             fullFadeImage.color = color;
