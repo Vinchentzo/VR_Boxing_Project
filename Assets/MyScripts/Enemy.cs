@@ -40,6 +40,7 @@ public class Enemy : MonoBehaviour
 
     void Awake()
     {
+        //Time.timeScale = 0.2f; // 20% speed
         rb = GetComponent<Rigidbody>();
 
         if (rb == null)

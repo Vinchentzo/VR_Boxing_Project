@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: 289794806}
   - component: {fileID: 289794808}
   - component: {fileID: 289794809}
+  - component: {fileID: 289794810}
   m_Layer: 2
   m_Name: PlayerHeadHitbox
   m_TagString: PlayerHead
@@ -334,6 +335,33 @@ MonoBehaviour:
   minPunchSpeed: 0.8
   baseDamage: 10
   hitCooldownSeconds: 0.25
+--- !u!54 &289794810
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289794804}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3
 --- !u!1 &328356443
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,9 +396,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72deed1f6a2aa024bb0e0d1d3b8bf1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2062496783}
+  player: {fileID: 1405558636}
   moveSpeed: 1
-  desiredDistance: 0.8
+  desiredDistance: 1
   distanceBuffer: 0.1
   turnSpeed: 360
   arenaMin: {x: -5, y: -5}
@@ -920,6 +948,11 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1178791450436251564, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+        type: 3}
+      propertyPath: m_CameraYOffset
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_Name
@@ -928,12 +961,12 @@ PrefabInstance:
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.025
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.073
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
@@ -982,8 +1015,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
+      propertyPath: m_Height
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6232745470614056095, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
@@ -1761,6 +1804,8 @@ GameObject:
   - component: {fileID: 1405558637}
   - component: {fileID: 1405558639}
   - component: {fileID: 1405558640}
+  - component: {fileID: 1405558641}
+  - component: {fileID: 1405558642}
   m_Layer: 2
   m_Name: PlayerBodyHitbox
   m_TagString: PlayerBody
@@ -1777,7 +1822,7 @@ Transform:
   m_GameObject: {fileID: 1405558635}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1802,10 +1847,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.18264543
-  m_Height: 1.4062486
+  m_Radius: 0.18
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 0.72350323, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1405558639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1835,6 +1880,49 @@ MonoBehaviour:
   minPunchSpeed: 0.8
   baseDamage: 10
   hitCooldownSeconds: 0.25
+--- !u!54 &1405558641
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405558635}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3
+--- !u!114 &1405558642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405558635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11186bb769ff0514590055484b8c68b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headCamera: {fileID: 2062496783}
+  xrOrigin: {fileID: 2030850371}
+  minHeight: 1
+  maxHeight: 1.8
 --- !u!1 &1429750349
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,11 +2492,8 @@ MonoBehaviour:
   fullFadeImage: {fileID: 1627086033}
   koText: {fileID: 1471474814}
   maxLowHealthIntensity: 0.45
-  lowHealthPower: 1.6
   hitFlashIntensity: 0.25
-  hitFlashFadeSpeed: 1
-  fadeToWhiteTime: 0.35
-  fadeWhiteToBlackTime: 1.25
+  fadeToKOScreen: 0.35
   restartDelayAfterBlack: 5
 --- !u!1 &2108341765
 GameObject:
