@@ -29,13 +29,20 @@ public class PunchTargetHit : MonoBehaviour
 
     private void TryApplyHit(Collision collision)
     {
-        var contact = collision.GetContact(0);
-
-        // Make sure the OTHER collider is a hand
-        if (!contact.otherCollider.CompareTag("Hand"))
+        if (collision.contactCount == 0)
             return;
 
-        var hitter = contact.otherCollider.gameObject;
+        var contact = collision.GetContact(0);
+
+        var tracker = contact.otherCollider.GetComponentInParent<HandVelocityTracker>();
+
+        if (tracker == null)
+            return;
+
+        GameObject hitter = tracker.gameObject;
+
+        if (!hitter.CompareTag("Hand"))
+            return;
 
         // cooldown by hand instance
         int id = hitter.GetInstanceID();
@@ -43,11 +50,13 @@ public class PunchTargetHit : MonoBehaviour
         if (_nextAllowedHitTime.TryGetValue(id, out float nextTime) && now < nextTime)
             return;
 
-        var tracker = hitter.GetComponent<HandVelocityTracker>();
-        if (tracker == null) return;
-
         float speed = tracker.Velocity.magnitude;
-        if (speed < minPunchSpeed) return;
+
+        if (speed < minPunchSpeed)
+        {
+            Debug.Log($"Punch too slow: {speed:F2}");
+            return;
+        }
 
         // Hit zone multiplier from the TARGET collider
         HitZone zone = contact.thisCollider.GetComponent<HitZone>();
