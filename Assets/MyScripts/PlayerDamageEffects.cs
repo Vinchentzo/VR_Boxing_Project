@@ -184,7 +184,11 @@ public class PlayerDamageEffects : MonoBehaviour
 
         yield return new WaitForSeconds(restartDelayAfterBlack);
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        koText.enabled = false;
+
+        fullFadeImage.enabled = false;
     }
 
     private void SetImageAlpha(Image image, float alpha)

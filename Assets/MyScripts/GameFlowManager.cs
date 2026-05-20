@@ -37,6 +37,12 @@ public class GameFlowManager : MonoBehaviour
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private float countdownStepTime = 1f;
 
+    [Header("Result UI")]
+    [SerializeField] private GameObject resultRoot;
+    [SerializeField] private TMP_Text resultTitleText;
+    [SerializeField] private string enemyKOMessage = "YOU WIN";
+    [SerializeField] private string playerKOMessage = "KNOCKED OUT";
+
     public GameState CurrentState => currentState;
 
     private void Awake()
@@ -123,30 +129,6 @@ public class GameFlowManager : MonoBehaviour
         Debug.Log("GameFlowManager: Entered Main Menu state.");
     }
 
-    //[ContextMenu("Start Fight")]
-    //public void StartFight()
-    //{
-    //    currentState = GameState.Fighting;
-
-    //    ResetHealth();
-
-    //    if (mainMenuRoot != null)
-    //        mainMenuRoot.SetActive(false);
-
-    //    if (rightMenuRayInteractor != null)
-    //        rightMenuRayInteractor.SetActive(false);
-
-    //    if (leftMenuRayInteractor != null)
-    //        leftMenuRayInteractor.SetActive(false);
-
-    //    if (enemyHealthBarRoot != null)
-    //        enemyHealthBarRoot.SetActive(true);
-
-    //    SetGameplayActive(true);
-
-    //    Debug.Log("GameFlowManager: Fight started.");
-    //}
-
     [ContextMenu("Start Fight")]
     public void StartFight()
     {
@@ -205,15 +187,6 @@ public class GameFlowManager : MonoBehaviour
         yield return new WaitForSeconds(countdownStepTime);
     }
 
-    public void EndFight()
-    {
-        currentState = GameState.Ended;
-
-        SetGameplayActive(false);
-
-        Debug.Log("GameFlowManager: Fight ended.");
-    }
-
     private void ResetHealth()
     {
         if (enemyHealth != null)
@@ -252,8 +225,7 @@ public class GameFlowManager : MonoBehaviour
         if (currentState != GameState.Fighting)
             return;
 
-        Debug.Log("GameFlowManager: Enemy KO.");
-        EndFight();
+        ShowResult(enemyKOMessage);
     }
 
     private void HandlePlayerKO()
@@ -261,7 +233,49 @@ public class GameFlowManager : MonoBehaviour
         if (currentState != GameState.Fighting)
             return;
 
-        Debug.Log("GameFlowManager: Player KO.");
-        EndFight();
+        ShowResult(playerKOMessage);
+    }
+
+    private void ShowResult(string message)
+    {
+        currentState = GameState.Ended;
+
+        SetGameplayActive(false);
+
+        if (enemyHealthBarRoot != null)
+            enemyHealthBarRoot.SetActive(false);
+
+        if (countdownRoot != null)
+            countdownRoot.SetActive(false);
+
+        if (mainMenuRoot != null)
+            mainMenuRoot.SetActive(false);
+
+        if (resultTitleText != null)
+            resultTitleText.text = message;
+
+        if (resultRoot != null)
+            resultRoot.SetActive(true);
+
+        if (rightMenuRayInteractor != null)
+            rightMenuRayInteractor.SetActive(true);
+
+        Debug.Log($"GameFlowManager: Result shown: {message}");
+    }
+
+    public void RestartFight()
+    {
+        if (resultRoot != null)
+            resultRoot.SetActive(false);
+
+        StartFight();
+    }
+
+    public void BackToMainMenu()
+    {
+        if (resultRoot != null)
+            resultRoot.SetActive(false);
+
+        EnterMainMenu();
     }
 }
