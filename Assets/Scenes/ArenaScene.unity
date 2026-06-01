@@ -166,7 +166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 95976357}
   m_Layer: 0
-  m_Name: ArenaColliders
+  m_Name: Arena Colliders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 160211031}
   - component: {fileID: 160211030}
   m_Layer: 5
-  m_Name: MainTitle
+  m_Name: Main Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 230464012}
   - component: {fileID: 230464011}
   m_Layer: 0
-  m_Name: GameFlowManager
+  m_Name: Game Flow Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -398,7 +398,7 @@ GameObject:
   m_Component:
   - component: {fileID: 261831831}
   m_Layer: 0
-  m_Name: HealthBarAnchor
+  m_Name: Health Bar Anchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -440,7 +440,7 @@ GameObject:
   - component: {fileID: 289794809}
   - component: {fileID: 289794810}
   m_Layer: 2
-  m_Name: PlayerHeadHitbox
+  m_Name: Player Head Hitbox
   m_TagString: PlayerHead
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -669,7 +669,7 @@ GameObject:
   - component: {fileID: 407796427}
   - component: {fileID: 407796428}
   m_Layer: 0
-  m_Name: BackWallCollider
+  m_Name: Back Wall Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -842,7 +842,7 @@ GameObject:
   - component: {fileID: 417019488}
   - component: {fileID: 417019489}
   m_Layer: 5
-  m_Name: TargetHealthBar
+  m_Name: Enemy Health Bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -970,7 +970,7 @@ GameObject:
   - component: {fileID: 469339277}
   - component: {fileID: 469339276}
   m_Layer: 5
-  m_Name: MainMenuButton
+  m_Name: Main Menu Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1310,7 +1310,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ef03540cc64e91e498397736f648ed74,
         type: 3}
       propertyPath: m_Name
-      value: Boxer-bl_rigged
+      value: Boxer Visual
       objectReference: {fileID: 0}
     - target: {fileID: 1852576806548013000, guid: ef03540cc64e91e498397736f648ed74,
         type: 3}
@@ -1530,7 +1530,7 @@ GameObject:
   - component: {fileID: 613408814}
   - component: {fileID: 613408813}
   m_Layer: 5
-  m_Name: CountdownText
+  m_Name: Countdown Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1664,7 +1664,7 @@ GameObject:
   - component: {fileID: 659319209}
   - component: {fileID: 659319208}
   m_Layer: 5
-  m_Name: ResultTitleText
+  m_Name: Result Title Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1966,7 +1966,7 @@ GameObject:
   - component: {fileID: 878327013}
   - component: {fileID: 878327012}
   m_Layer: 5
-  m_Name: EndFightPanel
+  m_Name: End Fight Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2045,7 +2045,7 @@ GameObject:
   - component: {fileID: 891844184}
   - component: {fileID: 891844183}
   m_Layer: 5
-  m_Name: RestartButton
+  m_Name: Restart Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2455,7 +2455,7 @@ GameObject:
   - component: {fileID: 1026020742}
   - component: {fileID: 1026020741}
   m_Layer: 0
-  m_Name: PlayerKOOverlayCanvas
+  m_Name: Player KO Overlay Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2541,7 +2541,7 @@ GameObject:
   - component: {fileID: 1031333324}
   - component: {fileID: 1031333328}
   m_Layer: 5
-  m_Name: MainMenuCanvas
+  m_Name: Main Menu Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2600,13 +2600,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1031333322}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0015, y: 0.0015, z: 0.0015}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1931493915}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2086858411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2644,7 +2644,7 @@ GameObject:
   - component: {fileID: 1041649966}
   - component: {fileID: 1041649965}
   m_Layer: 5
-  m_Name: StartCountdownCanvas
+  m_Name: Start Countdown Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2703,13 +2703,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1041649963}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0015, y: 0.0015, z: 0.0015}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 613408812}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2086858411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3630,7 +3630,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: c328dfff8237e91448040015f2cc3c93,
         type: 3}
       propertyPath: m_Name
-      value: GymVisual
+      value: Gym Visual
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c328dfff8237e91448040015f2cc3c93,
         type: 3}
@@ -4063,7 +4063,7 @@ GameObject:
   - component: {fileID: 1163683572}
   - component: {fileID: 1163683571}
   m_Layer: 0
-  m_Name: EnemyHealthBarCanvas
+  m_Name: Enemy Health Bar Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4158,7 +4158,7 @@ GameObject:
   - component: {fileID: 1249986557}
   - component: {fileID: 1249986558}
   m_Layer: 2
-  m_Name: InputActionManager
+  m_Name: Input Action Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4289,7 +4289,7 @@ GameObject:
   - component: {fileID: 1405558641}
   - component: {fileID: 1405558642}
   m_Layer: 2
-  m_Name: PlayerBodyHitbox
+  m_Name: Player Body Hitbox
   m_TagString: PlayerBody
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4418,7 +4418,7 @@ GameObject:
   - component: {fileID: 1420265215}
   - component: {fileID: 1420265218}
   m_Layer: 5
-  m_Name: ResultCanvas
+  m_Name: Result Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4477,13 +4477,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420265213}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0015, y: 0.0015, z: 0.0015}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 878327011}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2086858411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4588,7 +4588,7 @@ GameObject:
   - component: {fileID: 1471474815}
   - component: {fileID: 1471474814}
   m_Layer: 0
-  m_Name: KOText
+  m_Name: KO Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4855,7 +4855,7 @@ GameObject:
   - component: {fileID: 1532495370}
   - component: {fileID: 1532495371}
   m_Layer: 0
-  m_Name: RightWallCollider
+  m_Name: Right Wall Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4909,7 +4909,7 @@ GameObject:
   - component: {fileID: 1627086034}
   - component: {fileID: 1627086033}
   m_Layer: 0
-  m_Name: FullFadeImage
+  m_Name: Full Fade Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5033,7 +5033,7 @@ PrefabInstance:
     - target: {fileID: 4997708214959616375, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
       propertyPath: m_Name
-      value: RightGlovePrefab
+      value: Right Glove Prefab
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5063,7 +5063,7 @@ GameObject:
   - component: {fileID: 1783051795}
   - component: {fileID: 1783051796}
   m_Layer: 0
-  m_Name: FrontWallCollider
+  m_Name: Front Wall Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5118,7 +5118,7 @@ GameObject:
   - component: {fileID: 1856427719}
   - component: {fileID: 1856427718}
   m_Layer: 5
-  m_Name: StartFightButton
+  m_Name: Start Fight Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5249,7 +5249,7 @@ GameObject:
   - component: {fileID: 1899236638}
   - component: {fileID: 1899236639}
   m_Layer: 0
-  m_Name: FloorCollider
+  m_Name: Floor Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5303,7 +5303,7 @@ GameObject:
   - component: {fileID: 1931493917}
   - component: {fileID: 1931493916}
   m_Layer: 5
-  m_Name: MenuPanel
+  m_Name: Menu Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5379,7 +5379,7 @@ GameObject:
   - component: {fileID: 1984918365}
   - component: {fileID: 1984918364}
   m_Layer: 0
-  m_Name: PlayerHealthVolume
+  m_Name: Player Damage Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5428,7 +5428,7 @@ GameObject:
   - component: {fileID: 1992116955}
   - component: {fileID: 1992116956}
   m_Layer: 0
-  m_Name: LeftWallCollider
+  m_Name: Left Wall Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5578,6 +5578,40 @@ MonoBehaviour:
   hitFlashIntensity: 0.25
   fadeToKOScreen: 0.35
   restartDelayAfterBlack: 2
+--- !u!1 &2086858410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2086858411}
+  m_Layer: 0
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2086858411
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2086858410}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1031333326}
+  - {fileID: 1041649967}
+  - {fileID: 1420265217}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2108341765
 GameObject:
   m_ObjectHideFlags: 0
@@ -5664,7 +5698,7 @@ PrefabInstance:
     - target: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
       propertyPath: m_Name
-      value: LeftGlovePrefab
+      value: Left Glove
       objectReference: {fileID: 0}
     - target: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
@@ -5735,6 +5769,4 @@ SceneRoots:
   - {fileID: 328356446}
   - {fileID: 9325384}
   - {fileID: 230464012}
-  - {fileID: 1031333326}
-  - {fileID: 1041649967}
-  - {fileID: 1420265217}
+  - {fileID: 2086858411}

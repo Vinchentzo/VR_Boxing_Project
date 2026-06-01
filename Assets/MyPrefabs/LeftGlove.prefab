@@ -67,7 +67,7 @@ GameObject:
   - component: {fileID: 3264725138971006993}
   - component: {fileID: 5012323464722998471}
   m_Layer: 0
-  m_Name: LeftGlovePrefab
+  m_Name: LeftGlove
   m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
