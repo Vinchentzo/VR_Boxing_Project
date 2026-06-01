@@ -1,200 +1,223 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[DisallowMultipleComponent]
 public class PlayerDamageEffects : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private Health playerHealth;
     [SerializeField] private Volume damageVolume;
     [SerializeField] private Image fullFadeImage;
-    [SerializeField] private TMPro.TextMeshProUGUI koText;
+    [SerializeField] private TextMeshProUGUI koText;
 
-    [Header("Low Health Vignette")]
-    [SerializeField] private float maxLowHealthIntensity = 0.65f;
+    [Header("Damage Vignette")]
+    [SerializeField, Range(0f, 1f)] private float maxLowHealthIntensity = 0.65f;
+    [SerializeField, Range(0f, 1f)] private float hitFlashIntensity = 0.25f;
+    [SerializeField, Min(0f)] private float hitFlashFadeSpeed = 1f;
 
-    [Header("Hit Flash")]
-    [SerializeField] private float hitFlashIntensity = 0.25f;
-
-    [Header("KO Fade")]
-    [SerializeField] private float fadeToKOScreen = 0.35f; // used ones to fade to white, then second time to fade to black
-    [SerializeField] private float restartDelayAfterBlack = 5f;
+    [Header("KO Screen")]
+    [SerializeField, Min(0.01f)] private float koFadeDuration = 0.35f;
+    [SerializeField, Min(0f)] private float koScreenDuration = 5f;
 
     private Vignette vignette;
-    private float lowHealthIntensity = 0f;
-    private float flashIntensity = 0f;
-    private float lastHealth;
-    private bool koStarted = false;
+    private Coroutine knockoutSequence;
+    private float lowHealthIntensity;
+    private float flashIntensity;
+    private float previousHealth;
+    private bool knockoutStarted;
+    private bool referencesValid;
 
     private void Awake()
     {
-        if (playerHealth == null)
-            playerHealth = GetComponentInParent<PlayerHealth>();
+        referencesValid = ValidateReferences();
 
-        if (damageVolume != null)
-            damageVolume.profile.TryGet(out vignette);
+        if (!referencesValid)
+        {
+            enabled = false;
+            return;
+        }
+
+        if (!damageVolume.profile.TryGet(out vignette))
+        {
+            Debug.LogError(
+                "PlayerDamageEffects requires a Vignette override in the assigned Volume profile.",
+                this
+            );
+
+            enabled = false;
+            referencesValid = false;
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (!referencesValid)
+            return;
+
+        playerHealth.HealthChanged += HandleHealthChanged;
+        playerHealth.KnockedOut += HandleKnockedOut;
     }
 
     private void Start()
     {
-        if (playerHealth == null)
-        {
-            Debug.LogError("PlayerDamageEffects: PlayerHealth is not assigned.");
-            enabled = false;
-            return;
-        }
-
-        if (damageVolume == null)
-        {
-            Debug.LogError("PlayerDamageEffects: Damage Volume is not assigned.");
-            enabled = false;
-            return;
-        }
-
-        if (vignette == null)
-        {
-            Debug.LogError("PlayerDamageEffects: Vignette override not found in Volume profile.");
-            enabled = false;
-            return;
-        }
-
-        if (fullFadeImage == null)
-        {
-            Debug.LogError("PlayerDamageEffects: FullFadeImage is not assigned.");
-            enabled = false;
-            return;
-        }
-
-        if (koText == null)
-        {
-            Debug.LogError("PlayerDamageEffects: KOText is not assigned.");
-            enabled = false;
-            return;
-        }
-
-        koText.enabled = false;
-
-        lastHealth = playerHealth.currentHealth;
-
-        vignette.intensity.value = 0f;
-        SetImageAlpha(fullFadeImage, 0f);
-
-        UpdateLowHealthIntensity(playerHealth.currentHealth);
-
-        playerHealth.OnHealthChanged += HandleHealthChanged;
-        playerHealth.OnKO += HandleKO;
+        if (referencesValid)
+            ResetEffects();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (playerHealth != null)
         {
-            playerHealth.OnHealthChanged -= HandleHealthChanged;
-            playerHealth.OnKO -= HandleKO;
+            playerHealth.HealthChanged -= HandleHealthChanged;
+            playerHealth.KnockedOut -= HandleKnockedOut;
+        }
+
+        if (knockoutSequence != null)
+        {
+            StopCoroutine(knockoutSequence);
+            knockoutSequence = null;
         }
     }
 
     private void Update()
     {
-        if (koStarted)
+        if (knockoutStarted)
             return;
 
         flashIntensity = Mathf.MoveTowards(
             flashIntensity,
             0f,
-            Time.deltaTime
+            hitFlashFadeSpeed * Time.deltaTime
         );
 
-        float finalIntensity = Mathf.Clamp01(lowHealthIntensity + flashIntensity);
-        vignette.intensity.value = finalIntensity;
+        vignette.intensity.value = Mathf.Clamp01(lowHealthIntensity + flashIntensity);
+    }
+
+    private bool ValidateReferences()
+    {
+        if (playerHealth == null)
+        {
+            Debug.LogError("PlayerDamageEffects requires the player's Health component.", this);
+            return false;
+        }
+
+        if (damageVolume == null)
+        {
+            Debug.LogError("PlayerDamageEffects requires a damage Volume reference.", this);
+            return false;
+        }
+
+        if (damageVolume.profile == null)
+        {
+            Debug.LogError("PlayerDamageEffects requires a Volume profile.", this);
+            return false;
+        }
+
+        if (fullFadeImage == null)
+        {
+            Debug.LogError("PlayerDamageEffects requires a full-screen fade Image.", this);
+            return false;
+        }
+
+        if (koText == null)
+        {
+            Debug.LogError("PlayerDamageEffects requires a KO text reference.", this);
+            return false;
+        }
+
+        return true;
     }
 
     private void HandleHealthChanged(float currentHealth)
     {
-        if (currentHealth < lastHealth && !koStarted)
+        if (Mathf.Approximately(currentHealth, playerHealth.MaxHealth))
         {
-            flashIntensity = hitFlashIntensity;
+            ResetEffects();
+            return;
         }
 
-        lastHealth = currentHealth;
+        if (currentHealth < previousHealth && !knockoutStarted)
+            flashIntensity = hitFlashIntensity;
 
+        previousHealth = currentHealth;
         UpdateLowHealthIntensity(currentHealth);
+    }
+
+    private void HandleKnockedOut()
+    {
+        if (knockoutStarted)
+            return;
+
+        knockoutSequence = StartCoroutine(KnockoutSequence());
     }
 
     private void UpdateLowHealthIntensity(float currentHealth)
     {
-        float healthLost = 1f - Mathf.Clamp01(currentHealth / playerHealth.maxHealth);
-
-        lowHealthIntensity = healthLost * maxLowHealthIntensity;
+        float healthLostFraction = 1f - Mathf.Clamp01(currentHealth / playerHealth.MaxHealth);
+        lowHealthIntensity = healthLostFraction * maxLowHealthIntensity;
     }
 
-    private void HandleKO()
+    private void ResetEffects()
     {
-        if (koStarted)
-            return;
+        if (knockoutSequence != null)
+        {
+            StopCoroutine(knockoutSequence);
+            knockoutSequence = null;
+        }
 
-        StartCoroutine(KOSequence());
+        knockoutStarted = false;
+        flashIntensity = 0f;
+        previousHealth = playerHealth.CurrentHealth;
+
+        UpdateLowHealthIntensity(playerHealth.CurrentHealth);
+        vignette.intensity.value = lowHealthIntensity;
+
+        koText.enabled = false;
+
+        fullFadeImage.enabled = true;
+        SetFadeImageAlpha(0f);
     }
 
-    private IEnumerator KOSequence()
+    private IEnumerator KnockoutSequence()
     {
-        koStarted = true;
+        knockoutStarted = true;
 
         koText.text = "KO";
         koText.enabled = true;
 
-        // Remove the edge vignette so the full-screen KO fade takes over.
         vignette.intensity.value = 0f;
 
-        float t = 0f;
-
-        // Fade transparent -> white.
-        while (t < fadeToKOScreen)
-        {
-            t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / fadeToKOScreen);
-
-            //slightly gray color like e small flash
-            fullFadeImage.color = new Color(0.01f, 0.01f, 0.01f, a);
-
-            yield return null;
-        }
-
-        // Fade white -> black.
-        t = 0f;
-
-        while (t < fadeToKOScreen)
-        {
-            t += Time.deltaTime;
-            float progress = Mathf.Clamp01(t / fadeToKOScreen);
-
-            Color prev_color = fullFadeImage.color;
-            Color color = Color.Lerp(prev_color, Color.black, progress);
-            color.a = 1f;
-
-            fullFadeImage.color = color;
-
-            yield return null;
-        }
-
+        fullFadeImage.enabled = true;
         fullFadeImage.color = Color.black;
+        SetFadeImageAlpha(0f);
 
-        yield return new WaitForSeconds(restartDelayAfterBlack);
+        float elapsedTime = 0f;
 
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        while (elapsedTime < koFadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            SetFadeImageAlpha(Mathf.Clamp01(elapsedTime / koFadeDuration));
+            yield return null;
+        }
+
+        SetFadeImageAlpha(1f);
+
+        yield return new WaitForSeconds(koScreenDuration);
 
         koText.enabled = false;
-
         fullFadeImage.enabled = false;
+
+        knockoutSequence = null;
     }
 
-    private void SetImageAlpha(Image image, float alpha)
+    private void SetFadeImageAlpha(float alpha)
     {
-        Color color = image.color;
+        Color color = fullFadeImage.color;
         color.a = alpha;
-        image.color = color;
+        fullFadeImage.color = color;
     }
 }

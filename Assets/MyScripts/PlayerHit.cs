@@ -1,64 +1,66 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class PlayerHit : MonoBehaviour
 {
-    public float damageMultiplier = 1f;
-    public float minPunchSpeed = 0.8f;
-    public float baseDamage = 10f;
+    [Header("References")]
+    [SerializeField] private Health playerHealth;
+    [SerializeField] private HitZone hitZone;
 
-    // Prevent multiple hits from the same fist during continuous contact
-    public float hitCooldownSeconds = 0.25f;
-
-    private PlayerHealth _health;
-
-    // cooldown per hand object
-    private Dictionary<int, float> _nextAllowedHitTime = new Dictionary<int, float>();
-
-    void Awake()
+    private void Awake()
     {
-        _health = GetComponentInParent<PlayerHealth>();
-        if (_health == null)
-            Debug.LogWarning("Health component missing on " + gameObject.name);
-
+        if (!ValidateReferences())
+            enabled = false;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        TryApplyHit(collision);
+        if (collision.contactCount == 0)
+            return;
+
+        ContactPoint contact = collision.GetContact(0);
+
+        if (!contact.otherCollider.CompareTag("EnemyHand"))
+            return;
+
+        Enemy enemy = contact.otherCollider.GetComponentInParent<Enemy>();
+
+        if (enemy == null)
+        {
+            Debug.LogWarning(
+                $"PlayerHit received a collision from an EnemyHand without an Enemy component: {contact.otherCollider.name}.",
+                contact.otherCollider
+            );
+            return;
+        }
+
+        if (!enemy.TryConsumeAttackHit(out float attackDamage))
+            return;
+
+        float damage = attackDamage * hitZone.DamageMultiplier;
+
+        Debug.Log(
+            $"{enemy.name} hit {hitZone.name}: damage={damage:F1}.",
+            this
+        );
+
+        playerHealth.TakeDamage(damage);
     }
 
-    private void TryApplyHit(Collision collision)
+    private bool ValidateReferences()
     {
-        var contact = collision.GetContact(0);
+        if (playerHealth == null)
+        {
+            Debug.LogError("PlayerHit requires the player's Health component.", this);
+            return false;
+        }
 
-        // Make sure the OTHER collider is a hand
-        if (!contact.otherCollider.CompareTag("EnemyHand")) 
-            return;
+        if (hitZone == null)
+        {
+            Debug.LogError("PlayerHit requires a HitZone reference.", this);
+            return false;
+        }
 
-        var hitter = contact.otherCollider.gameObject;
-
-        // cooldown by hand instance
-        int id = hitter.GetInstanceID();
-        float now = Time.time;
-        if (_nextAllowedHitTime.TryGetValue(id, out float nextTime) && now < nextTime)
-            return;
-
-        var enemy = hitter.GetComponentInParent<Enemy>();
-        if (enemy == null || !enemy.CanDealDamageNow())
-            return;
-
-        // Hit zone multiplier from the TARGET collider
-        HitZone zone = contact.thisCollider.GetComponent<HitZone>();
-        float zoneMultiplier = zone != null ? zone.damageMultiplier : 1f;
-
-        float damage = baseDamage * zoneMultiplier;
-        Debug.Log($"base damage = {baseDamage}\nzone multiplier = {zoneMultiplier}\ndamage = {damage}");
-
-
-        Debug.Log($"HIT: \"{hitter.name}\" hit \"{contact.thisCollider.name}\" damage={damage:F1}");
-        _health?.TakeDamage(damage);
-
-        _nextAllowedHitTime[id] = now + hitCooldownSeconds;
+        return true;
     }
 }

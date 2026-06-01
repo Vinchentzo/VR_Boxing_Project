@@ -1,74 +1,81 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class PunchTargetHit : MonoBehaviour
 {
-    public float damageMultiplier = 1f;
-    public float minPunchSpeed = 0.8f;
-    public float maxDamage = 25f;
+    [Header("References")]
+    [SerializeField] private Health targetHealth;
 
-    // Prevent multiple hits from the same fist during continuous contact
-    public float hitCooldownSeconds = 0.25f;
+    [Header("Punch Damage")]
+    [SerializeField, Min(0f)] private float minimumPunchSpeed = 0.8f;
+    [SerializeField, Min(0f)] private float damagePerSpeedUnit = 10f;
+    [SerializeField, Min(0f)] private float maximumDamage = 25f;
+    [SerializeField, Min(0f)] private float hitCooldown = 0.25f;
 
-    private Health _health;
+    private readonly Dictionary<int, float> nextAllowedHitTimes = new();
 
-    // cooldown per hand object
-    private Dictionary<int, float> _nextAllowedHitTime = new Dictionary<int, float>();
-
-    void Awake()
+    private void Awake()
     {
-        _health = GetComponentInParent<Health>();
-        if (_health == null)
-            Debug.LogWarning("Health component missing on " + gameObject.name);
+        if (targetHealth != null)
+            return;
+
+        Debug.LogError("PunchTargetHit requires a target Health reference.", this);
+        enabled = false;
+    }
+
+    private void OnDisable()
+    {
+        nextAllowedHitTimes.Clear();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        TryApplyHit(collision);
-    }
-
-    private void TryApplyHit(Collision collision)
-    {
-        if (collision.contactCount == 0)
+        if (collision.contactCount == 0 || targetHealth.IsKnockedOut)
             return;
 
-        var contact = collision.GetContact(0);
+        ContactPoint contact = collision.GetContact(0);
 
-        var tracker = contact.otherCollider.GetComponentInParent<HandVelocityTracker>();
+        HandVelocityTracker handTracker =
+            contact.otherCollider.GetComponentInParent<HandVelocityTracker>();
 
-        if (tracker == null)
+        if (handTracker == null || !handTracker.CompareTag("Hand"))
             return;
 
-        GameObject hitter = tracker.gameObject;
+        HitZone hitZone = contact.thisCollider.GetComponent<HitZone>();
 
-        if (!hitter.CompareTag("Hand"))
+        if (hitZone == null)
             return;
 
-        // cooldown by hand instance
-        int id = hitter.GetInstanceID();
-        float now = Time.time;
-        if (_nextAllowedHitTime.TryGetValue(id, out float nextTime) && now < nextTime)
-            return;
+        int handId = handTracker.gameObject.GetInstanceID();
+        float currentTime = Time.time;
 
-        float speed = tracker.Velocity.magnitude;
-
-        if (speed < minPunchSpeed)
+        if (nextAllowedHitTimes.TryGetValue(handId, out float nextAllowedTime)
+            && currentTime < nextAllowedTime)
         {
-            Debug.Log($"Punch too slow: {speed:F2}");
             return;
         }
 
-        // Hit zone multiplier from the TARGET collider
-        HitZone zone = contact.thisCollider.GetComponent<HitZone>();
-        float zoneMultiplier = zone != null ? zone.damageMultiplier : 1f;
+        float punchSpeed = handTracker.Velocity.magnitude;
 
-        float damage = Mathf.Min(speed * damageMultiplier * 10f * zoneMultiplier, maxDamage);
+        if (punchSpeed < minimumPunchSpeed)
+        {
+            Debug.Log($"Punch too slow: {punchSpeed:F2}");
+            return;
+        }
 
-        Debug.Log($"HIT: \"{hitter.name}\" hit \"{contact.thisCollider.name}\" speed={speed:F2} damage={damage:F1}");
-        _health?.TakeDamage(damage);
+        float damage = Mathf.Min(
+            punchSpeed * damagePerSpeedUnit * hitZone.DamageMultiplier,
+            maximumDamage
+        );
 
-        _nextAllowedHitTime[id] = now + hitCooldownSeconds;
+        targetHealth.TakeDamage(damage);
+
+        nextAllowedHitTimes[handId] = currentTime + hitCooldown;
+
+        Debug.Log(
+            $"{handTracker.name} hit {hitZone.name}: speed={punchSpeed:F2}, damage={damage:F1}.",
+            this
+        );
     }
-
-
 }

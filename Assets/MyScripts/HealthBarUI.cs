@@ -1,135 +1,126 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[DisallowMultipleComponent]
 public class HealthBarUI : MonoBehaviour
 {
-    [Header("Health")]
-    public Health targetHealth;
-    public Slider slider;
-    [SerializeField] private float resetTime = 1.5f;
-
+    [Header("References")]
+    [SerializeField] private Health targetHealth;
+    [SerializeField] private Slider slider;
     [SerializeField] private Transform playerCamera;
-    [SerializeField] private float showAngleDegrees = 22f;
-    [SerializeField] private float minLookUpDot = 0.05f;
-    [SerializeField] private float fadeSpeed = 8f;
+
+    [Header("Visibility")]
+    [SerializeField, Range(0f, 180f)] private float showAngleDegrees = 22f;
+    [SerializeField, Range(-1f, 1f)] private float minLookUpDot = 0.1f;
+    [SerializeField, Min(0f)] private float fadeSpeed = 8f;
 
     private CanvasGroup canvasGroup;
-    private Canvas parentCanvas;
     private Transform billboardRoot;
-    private bool koScheduled = false;
 
     private void Awake()
     {
-        if (targetHealth == null) Debug.LogError("HealthBarUI: targetHealth not assigned.");
-        if (slider == null) Debug.LogError("HealthBarUI: slider not assigned.");
+        canvasGroup = GetComponent<CanvasGroup>();
 
-        parentCanvas = GetComponentInParent<Canvas>();
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
 
-        // Rotate the world-space canvas, not only the slider child.
         if (parentCanvas != null && parentCanvas.renderMode == RenderMode.WorldSpace)
             billboardRoot = parentCanvas.transform;
-        else
-            billboardRoot = transform;
 
-        canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null) Debug.LogError("HealthBarUI: canvasGroup not found.");
+        if (!ValidateReferences())
+            enabled = false;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        if (targetHealth == null)
-        {
-            Debug.LogError("HealthBarUI: targetHealth not assigned and could not be found in parent.");
-            enabled = false;
+        if (targetHealth == null || slider == null)
             return;
-        }
 
-        if (slider == null)
-        {
-            Debug.LogError("HealthBarUI: slider not assigned and could not be found.");
-            enabled = false;
-            return;
-        }
-
-        slider.maxValue = targetHealth.maxHealth;
-        slider.value = targetHealth.currentHealth;
-
-        targetHealth.OnHealthChanged += HandleHealthChanged;
-        targetHealth.OnKO += HandleKO;
+        targetHealth.HealthChanged += HandleHealthChanged;
+        UpdateSlider(targetHealth.CurrentHealth);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (targetHealth != null)
-        {
-            targetHealth.OnHealthChanged -= HandleHealthChanged;
-            targetHealth.OnKO -= HandleKO;
-        }
+            targetHealth.HealthChanged -= HandleHealthChanged;
     }
 
     private void LateUpdate()
     {
-        if (playerCamera == null && Camera.main != null)
-            playerCamera = Camera.main.transform;
-
-        if (playerCamera == null)
-            return;
-
         FacePlayer();
         UpdateVisibility();
     }
 
-    private void HandleHealthChanged(float current)
+    private bool ValidateReferences()
     {
+        if (targetHealth == null)
+        {
+            Debug.LogError("HealthBarUI requires a target Health reference.", this);
+            return false;
+        }
+
         if (slider == null)
-            return;
+        {
+            Debug.LogError("HealthBarUI requires a Slider reference.", this);
+            return false;
+        }
 
-        slider.maxValue = targetHealth.maxHealth;
-        slider.value = current;
+        if (playerCamera == null)
+        {
+            Debug.LogError("HealthBarUI requires a player camera Transform reference.", this);
+            return false;
+        }
+
+        if (canvasGroup == null)
+        {
+            Debug.LogError("HealthBarUI requires a CanvasGroup on the same GameObject.", this);
+            return false;
+        }
+
+        if (billboardRoot == null)
+        {
+            Debug.LogError("HealthBarUI must be placed under a world-space Canvas.", this);
+            return false;
+        }
+
+        return true;
     }
 
-    private void HandleKO()
+    private void HandleHealthChanged(float currentHealth)
     {
-        if (koScheduled)
-            return;
-
-        koScheduled = true;
-        Debug.Log($"KO! Resetting in {resetTime}s...");
-        Invoke(nameof(ResetTarget), resetTime);
+        UpdateSlider(currentHealth);
     }
 
-    private void ResetTarget()
+    private void UpdateSlider(float currentHealth)
     {
-        koScheduled = false;
-        targetHealth.ResetHealth();
+        slider.maxValue = targetHealth.MaxHealth;
+        slider.value = currentHealth;
     }
 
     private void FacePlayer()
     {
-        if (billboardRoot == null)
-            return;
-
         Vector3 directionFromCameraToBar = billboardRoot.position - playerCamera.position;
 
         if (directionFromCameraToBar.sqrMagnitude < 0.0001f)
             return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(directionFromCameraToBar.normalized, Vector3.up);
-
-        billboardRoot.rotation = targetRotation;
+        billboardRoot.rotation = Quaternion.LookRotation(
+            directionFromCameraToBar.normalized,
+            Vector3.up
+        );
     }
 
     private void UpdateVisibility()
     {
-        Vector3 toBar = billboardRoot.position - playerCamera.position;
+        Vector3 directionToBar = billboardRoot.position - playerCamera.position;
 
-        if (toBar.sqrMagnitude < 0.0001f)
+        if (directionToBar.sqrMagnitude < 0.0001f)
         {
             FadeTo(0f);
             return;
         }
 
-        Vector3 directionToBar = toBar.normalized;
+        directionToBar.Normalize();
 
         float angle = Vector3.Angle(playerCamera.forward, directionToBar);
         bool lookingNearBar = angle <= showAngleDegrees;
@@ -137,9 +128,7 @@ public class HealthBarUI : MonoBehaviour
         float upwardLookAmount = Vector3.Dot(playerCamera.forward, Vector3.up);
         bool lookingUpEnough = upwardLookAmount >= minLookUpDot;
 
-        bool shouldShow = lookingNearBar && lookingUpEnough;
-
-        FadeTo(shouldShow ? 1f : 0f);
+        FadeTo(lookingNearBar && lookingUpEnough ? 1f : 0f);
     }
 
     private void FadeTo(float targetAlpha)

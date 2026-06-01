@@ -1,170 +1,360 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy : MonoBehaviour
 {
-    public Transform player;
-
-    [Header("Movement")]
-    public float moveSpeed = 1.2f;
-    public float desiredDistance = 1.8f;     // single target distance
-    public float distanceBuffer = 0.15f;     // allowed band around desiredDistance
-    public float turnSpeed = 360f;
-
-    [Header("Arena Bounds (XZ)")]
-    [SerializeField] private Vector2 arenaMin = new Vector2(-5, -5);
-    [SerializeField] private Vector2 arenaMax = new Vector2(5, 5);
-
-    [Header("Strafing")]
-    public float strafeSpeed = 0.8f;
-    public float strafeChangeIntervalMin = 0.8f;
-    public float strafeChangeIntervalMax = 2.0f;
-
-    [Header("Attack")]
-    public float attackCooldown = 2.0f;
-    public float attackChancePerCheck = 0.35f;  // 0..1
-    public float attackCheckInterval = 0.25f;   // don't roll RNG every physics tick
-
-    private Rigidbody rb;
-    private Animator anim;
-
-    private enum State { Approach, Hold, Attack }
-    private State state = State.Approach;
-
-    private float strafeDir = 1f;
-    private float nextStrafeChangeTime = 0f;
-
-    private float nextAttackTime = 0f;
-    private float nextAttackCheckTime = 0f;
-
-    private float fixedY;
-
-    void Awake()
+    private enum State
     {
-        //Time.timeScale = 0.2f; // 20% speed
-        rb = GetComponent<Rigidbody>();
-
-        if (rb == null)
-        {
-            Debug.LogError($"No RigidBody on {this.name}");
-        }
-        anim = GetComponentInChildren<Animator>();
-        if (anim == null)
-        {
-            Debug.LogError($"No Animator on {this.name}");
-        }
-
-        fixedY = rb.position.y;
+        Approach,
+        Hold,
+        Attack
     }
 
-    void FixedUpdate()
+    private static readonly int SpeedParameter = Animator.StringToHash("Speed");
+    private static readonly int AttackParameter = Animator.StringToHash("Attack");
+
+    private const string AttackStateTag = "Attack";
+
+    [Header("References")]
+    [SerializeField] private Transform player;
+    [SerializeField] private Animator animator;
+
+    [Header("Movement")]
+    [SerializeField, Min(0f)] private float moveSpeed = 1.2f;
+    [SerializeField, Min(0f)] private float desiredDistance = 1.8f;
+    [SerializeField, Min(0f)] private float distanceBuffer = 0.15f;
+    [SerializeField, Min(0f)] private float turnSpeed = 360f;
+
+    [Header("Arena Bounds (XZ)")]
+    [SerializeField] private Vector2 arenaMin = new Vector2(-5f, -5f);
+    [SerializeField] private Vector2 arenaMax = new Vector2(5f, 5f);
+
+    [Header("Strafing")]
+    [SerializeField, Min(0f)] private float strafeSpeed = 0.8f;
+    [SerializeField, Min(0f)] private float strafeChangeIntervalMin = 0.8f;
+    [SerializeField, Min(0f)] private float strafeChangeIntervalMax = 2f;
+
+    [Header("Attack")]
+    [SerializeField, Min(0f)] private float attackDamage = 10f;
+    [SerializeField, Min(0f)] private float attackCooldown = 2f;
+    [SerializeField, Range(0f, 1f)] private float attackChancePerCheck = 0.35f;
+    [SerializeField, Min(0.01f)] private float attackCheckInterval = 0.25f;
+
+    private Rigidbody rigidBody;
+    private State state = State.Approach;
+
+    private Vector3 startingPosition;
+    private Quaternion startingRotation;
+    private float fixedY;
+
+    private float strafeDirection = 1f;
+    private float nextStrafeChangeTime;
+    private float nextAttackTime;
+    private float nextAttackCheckTime;
+
+    private bool attackAnimationStarted;
+    private bool attackHitConsumed;
+
+    private void Awake()
     {
-        if (player == null) return;
+        rigidBody = GetComponent<Rigidbody>();
 
-        Vector3 toPlayer = player.position - rb.position;
-        toPlayer.y = 0f;
-
-        float dist = toPlayer.magnitude;
-
-        Vector3 forward = (toPlayer.sqrMagnitude > 0.0001f) ? toPlayer.normalized : transform.forward;
-
-        // Rotate towards player (yaw only)
-        if (state != State.Attack && toPlayer.sqrMagnitude > 0.0001f)
+        if (!ValidateReferences())
         {
-            Quaternion targetRot = Quaternion.LookRotation(forward);
-            Quaternion newRot = Quaternion.RotateTowards(rb.rotation, targetRot, turnSpeed * Time.fixedDeltaTime);
-            rb.MoveRotation(newRot);
+            enabled = false;
+            return;
         }
 
-        float now = Time.time;
+        startingPosition = rigidBody.position;
+        startingRotation = rigidBody.rotation;
+        fixedY = startingPosition.y;
+    }
 
-        // ----- State transitions -----
+    private void OnEnable()
+    {
+        if (rigidBody == null || animator == null)
+            return;
+
+        rigidBody.isKinematic = false;
+
+        ResetRuntimeState();
+    }
+
+    private void OnDisable()
+    {
+        if (rigidBody != null)
+        {
+            if (!rigidBody.isKinematic)
+            {
+                rigidBody.velocity = Vector3.zero;
+                rigidBody.angularVelocity = Vector3.zero;
+            }
+
+            rigidBody.isKinematic = true;
+        }
+
+        if (animator != null)
+        {
+            animator.SetFloat(SpeedParameter, 0f);
+            animator.ResetTrigger(AttackParameter);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 toPlayer = player.position - rigidBody.position;
+        toPlayer.y = 0f;
+
+        float distanceToPlayer = toPlayer.magnitude;
+
+        Vector3 forward = toPlayer.sqrMagnitude > 0.0001f
+            ? toPlayer.normalized
+            : transform.forward;
+
+        if (state != State.Attack)
+            RotateTowardsPlayer(forward, toPlayer.sqrMagnitude);
+
+        float currentTime = Time.time;
+
         if (state == State.Attack)
         {
-            if (!anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack") && !anim.IsInTransition(0))
-            {
-                state = State.Hold;
-            }
+            UpdateAttackState();
         }
         else
         {
-            // Distance control to maintain ONE desired distance band
-            float farThreshold = desiredDistance + distanceBuffer;
-            float nearThreshold = desiredDistance - distanceBuffer;
-
-            if (dist > farThreshold) state = State.Approach;
-            else if (dist < nearThreshold) state = State.Approach; // too close: also "Approach" but we'll move backwards
-            else state = State.Hold;
-
-            // Attack only while strafing (Hold), and only on cooldown, and only check periodically
-            if (state == State.Hold && now >= nextAttackTime && now >= nextAttackCheckTime)
-            {
-                nextAttackCheckTime = now + attackCheckInterval;
-
-                if (Random.value < attackChancePerCheck)
-                {
-                    state = State.Attack;
-                    nextAttackTime = now + attackCooldown;
-
-                    if (anim != null)
-                        anim.SetTrigger("Attack");
-                }
-            }
+            UpdateMovementState(distanceToPlayer);
+            TryStartAttack(currentTime);
         }
 
-        // ----- Strafing direction updates (Hold only) -----
-        if (state == State.Hold && now >= nextStrafeChangeTime)
-        {
-            strafeDir = (Random.value < 0.5f) ? -1f : 1f;
-            float nextIn = Random.Range(strafeChangeIntervalMin, strafeChangeIntervalMax);
-            nextStrafeChangeTime = now + nextIn;
-        }
+        if (state == State.Hold)
+            UpdateStrafeDirection(currentTime);
 
-        // ----- Movement -----
-        Vector3 move = Vector3.zero;
+        Vector3 movement = CalculateMovement(forward, distanceToPlayer);
 
-        if (state == State.Approach)
-        {
-            // If too far: move forward. If too close: move backward.
-            float delta = dist - desiredDistance;
+        animator.SetFloat(SpeedParameter, movement.magnitude);
 
-            if (delta > distanceBuffer) move = forward * moveSpeed;
-            else if (delta < -distanceBuffer) move = -forward * moveSpeed;
-            else move = Vector3.zero;
-        }
-        else if (state == State.Hold)
-        {
-            Vector3 strafe = Vector3.Cross(Vector3.up, forward) * strafeDir;
-            move = strafe * strafeSpeed;
-        }
-        else if (state == State.Attack)
-        {
-            // No lunge: stay roughly in place during attack (more realistic for “in-place punch”)
-            move = Vector3.zero;
-        }
-
-        // Animation speed: only reflect locomotion (not attack)
-        if (anim != null)
-            anim.SetFloat("Speed", move.magnitude);
-
-        // Stop collision impulses from accumulating and making the enemy drift/spin.
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-
-        // Apply movement once
-        Vector3 newPos = rb.position + move * Time.fixedDeltaTime;
-
-        // Clamp arena bounds (XZ)
-        newPos.x = Mathf.Clamp(newPos.x, arenaMin.x, arenaMax.x);
-        newPos.z = Mathf.Clamp(newPos.z, arenaMin.y, arenaMax.y);
-        newPos.y = fixedY;
-
-        rb.MovePosition(newPos);
+        ApplyMovement(movement);
     }
 
-    public bool CanDealDamageNow()
+    /// <summary>
+    /// Allows one valid collision to deal damage during the current attack.
+    /// Prevents one jab from damaging both the player's head and body.
+    /// </summary>
+    public bool TryConsumeAttackHit(out float damage)
     {
-        if (anim == null) return false;
+        damage = 0f;
 
-        return anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack") && !anim.IsInTransition(0);
+        if (state != State.Attack || attackHitConsumed || !IsAttackDamageWindowActive())
+            return false;
+
+        attackHitConsumed = true;
+        damage = attackDamage;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Restores the enemy to the starting position and clears runtime combat state.
+    /// Called when entering the menu or beginning a new fight.
+    /// </summary>
+    public void ResetForFight()
+    {
+        if (rigidBody == null || animator == null)
+        {
+            Debug.LogError("Enemy cannot reset because required references are missing.", this);
+            return;
+        }
+
+        rigidBody.position = startingPosition;
+        rigidBody.rotation = startingRotation;
+
+        if (!rigidBody.isKinematic)
+        {
+            rigidBody.velocity = Vector3.zero;
+            rigidBody.angularVelocity = Vector3.zero;
+        }
+
+        ResetRuntimeState();
+    }
+
+    private bool ValidateReferences()
+    {
+        if (rigidBody == null)
+        {
+            Debug.LogError("Enemy requires a Rigidbody component on the same GameObject.", this);
+            return false;
+        }
+
+        if (player == null)
+        {
+            Debug.LogError("Enemy requires a Player Transform reference.", this);
+            return false;
+        }
+
+        if (animator == null)
+        {
+            Debug.LogError("Enemy requires the Boxer Visual Animator reference.", this);
+            return false;
+        }
+
+        if (arenaMin.x > arenaMax.x || arenaMin.y > arenaMax.y)
+        {
+            Debug.LogError("Enemy arena minimum bounds must be smaller than maximum bounds.", this);
+            return false;
+        }
+
+        if (strafeChangeIntervalMin > strafeChangeIntervalMax)
+        {
+            Debug.LogError("Enemy minimum strafe interval cannot exceed maximum strafe interval.", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ResetRuntimeState()
+    {
+        state = State.Approach;
+
+        fixedY = startingPosition.y;
+
+        strafeDirection = 1f;
+        nextStrafeChangeTime = 0f;
+        nextAttackTime = 0f;
+        nextAttackCheckTime = 0f;
+
+        attackAnimationStarted = false;
+        attackHitConsumed = false;
+
+        animator.SetFloat(SpeedParameter, 0f);
+        animator.ResetTrigger(AttackParameter);
+    }
+
+    private void RotateTowardsPlayer(Vector3 forward, float squaredDistanceToPlayer)
+    {
+        if (squaredDistanceToPlayer < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(forward);
+        Quaternion newRotation = Quaternion.RotateTowards(
+            rigidBody.rotation,
+            targetRotation,
+            turnSpeed * Time.fixedDeltaTime
+        );
+
+        rigidBody.MoveRotation(newRotation);
+    }
+
+    private void UpdateMovementState(float distanceToPlayer)
+    {
+        float farThreshold = desiredDistance + distanceBuffer;
+        float nearThreshold = desiredDistance - distanceBuffer;
+
+        if (distanceToPlayer > farThreshold || distanceToPlayer < nearThreshold)
+        {
+            state = State.Approach;
+            return;
+        }
+
+        state = State.Hold;
+    }
+
+    private void TryStartAttack(float currentTime)
+    {
+        if (state != State.Hold)
+            return;
+
+        if (currentTime < nextAttackTime || currentTime < nextAttackCheckTime)
+            return;
+
+        nextAttackCheckTime = currentTime + attackCheckInterval;
+
+        if (Random.value >= attackChancePerCheck)
+            return;
+
+        state = State.Attack;
+
+        nextAttackTime = currentTime + attackCooldown;
+
+        attackAnimationStarted = false;
+        attackHitConsumed = false;
+
+        animator.SetFloat(SpeedParameter, 0f);
+        animator.SetTrigger(AttackParameter);
+    }
+
+    private void UpdateAttackState()
+    {
+        bool isInAttackAnimation = animator
+            .GetCurrentAnimatorStateInfo(0)
+            .IsTag(AttackStateTag);
+
+        if (!attackAnimationStarted)
+        {
+            if (isInAttackAnimation)
+                attackAnimationStarted = true;
+
+            return;
+        }
+
+        if (!isInAttackAnimation && !animator.IsInTransition(0))
+            state = State.Hold;
+    }
+
+    private bool IsAttackDamageWindowActive()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).IsTag(AttackStateTag)
+               && !animator.IsInTransition(0);
+    }
+
+    private void UpdateStrafeDirection(float currentTime)
+    {
+        if (currentTime < nextStrafeChangeTime)
+            return;
+
+        strafeDirection = Random.value < 0.5f ? -1f : 1f;
+
+        float nextChangeDelay = Random.Range(
+            strafeChangeIntervalMin,
+            strafeChangeIntervalMax
+        );
+
+        nextStrafeChangeTime = currentTime + nextChangeDelay;
+    }
+
+    private Vector3 CalculateMovement(Vector3 forward, float distanceToPlayer)
+    {
+        if (state == State.Attack)
+            return Vector3.zero;
+
+        if (state == State.Hold)
+        {
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            return right * strafeDirection * strafeSpeed;
+        }
+
+        float distanceError = distanceToPlayer - desiredDistance;
+
+        if (distanceError > distanceBuffer)
+            return forward * moveSpeed;
+
+        if (distanceError < -distanceBuffer)
+            return -forward * moveSpeed;
+
+        return Vector3.zero;
+    }
+
+    private void ApplyMovement(Vector3 movement)
+    {
+        rigidBody.velocity = Vector3.zero;
+        rigidBody.angularVelocity = Vector3.zero;
+
+        Vector3 newPosition = rigidBody.position + movement * Time.fixedDeltaTime;
+
+        newPosition.x = Mathf.Clamp(newPosition.x, arenaMin.x, arenaMax.x);
+        newPosition.z = Mathf.Clamp(newPosition.z, arenaMin.y, arenaMax.y);
+        newPosition.y = fixedY;
+
+        rigidBody.MovePosition(newPosition);
     }
 }

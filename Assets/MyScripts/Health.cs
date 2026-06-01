@@ -1,37 +1,47 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Health : MonoBehaviour
 {
-    public float maxHealth = 100f;
-    public float currentHealth;
+    [SerializeField, Min(1f)] private float maxHealth = 100f;
 
-    public event Action<float> OnHealthChanged; // (current, max)
-    public event Action OnKO;
+    public float MaxHealth => maxHealth;
+    public float CurrentHealth { get; private set; }
+    public bool IsKnockedOut { get; private set; }
 
-    void Awake()
+    public event Action<float> HealthChanged;
+    public event Action KnockedOut;
+
+    private void Awake()
     {
-        currentHealth = maxHealth;
-        OnHealthChanged?.Invoke(currentHealth);
+        CurrentHealth = maxHealth;
+        IsKnockedOut = false;
     }
 
-    public void TakeDamage(float dmg)
+    public void TakeDamage(float damage)
     {
-        currentHealth = Mathf.Max(0f, currentHealth - dmg);
-        OnHealthChanged?.Invoke(currentHealth);
+        if (IsKnockedOut || damage <= 0f)
+            return;
 
-        Debug.Log($"{gameObject.name} HP: {currentHealth:F1}/{maxHealth}");
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
+        HealthChanged?.Invoke(CurrentHealth);
 
-        if (currentHealth <= 0f)
-        {
-            OnKO?.Invoke();
-        }
+        Debug.Log($"{name} HP: {CurrentHealth:F1}/{MaxHealth:F1}", this);
+
+        if (CurrentHealth > 0f)
+            return;
+
+        IsKnockedOut = true;
+
+        Debug.Log($"{name} knocked out.", this);
+        KnockedOut?.Invoke();
     }
 
     public void ResetHealth()
     {
-        currentHealth = maxHealth;
-        OnHealthChanged?.Invoke(currentHealth);
+        IsKnockedOut = false;
+        CurrentHealth = maxHealth;
+        HealthChanged?.Invoke(CurrentHealth);
     }
 }
-    

@@ -359,10 +359,12 @@ MonoBehaviour:
   startFightOnSceneLoad: 0
   enemy: {fileID: 328356444}
   enemyHealth: {fileID: 328356450}
+  enemyHitReceiver: {fileID: 328356451}
   enemyHealthBarRoot: {fileID: 261831830}
-  enemyHitReceivers: []
-  playerHealth: {fileID: 2030850377}
-  playerHitReceivers: []
+  playerHealth: {fileID: 2030850383}
+  playerHitReceivers:
+  - {fileID: 1405558640}
+  - {fileID: 289794809}
   mainMenuRoot: {fileID: 1031333322}
   rightMenuRayInteractor: {fileID: 943595834}
   leftMenuRayInteractor: {fileID: 764804239}
@@ -371,8 +373,8 @@ MonoBehaviour:
   countdownStepTime: 1
   resultRoot: {fileID: 1420265213}
   resultTitleText: {fileID: 659319208}
-  enemyKOMessage: YOU WIN
-  playerKOMessage: KNOCKED OUT
+  enemyKnockoutMessage: YOU WIN
+  playerKnockoutMessage: KNOCKED OUT
 --- !u!4 &230464012
 Transform:
   m_ObjectHideFlags: 0
@@ -507,10 +509,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6b602d98cbadf64b9ff32a2443e3b68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMultiplier: 1
-  minPunchSpeed: 0.8
-  baseDamage: 10
-  hitCooldownSeconds: 0.25
+  playerHealth: {fileID: 2030850383}
+  hitZone: {fileID: 289794808}
 --- !u!54 &289794810
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -571,6 +571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1405558636}
+  animator: {fileID: 1847252542}
   moveSpeed: 1
   desiredDistance: 1
   distanceBuffer: 0.1
@@ -580,6 +581,7 @@ MonoBehaviour:
   strafeSpeed: 0.8
   strafeChangeIntervalMin: 0.8
   strafeChangeIntervalMax: 2
+  attackDamage: 10
   attackCooldown: 2
   attackChancePerCheck: 0.2
   attackCheckInterval: 0.25
@@ -641,7 +643,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  currentHealth: 0
 --- !u!114 &328356451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,10 +655,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f1435f45934fac468e68a517fe13029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMultiplier: 1
-  minPunchSpeed: 0.8
-  maxDamage: 25
-  hitCooldownSeconds: 0.25
+  targetHealth: {fileID: 328356450}
+  minimumPunchSpeed: 0.8
+  damagePerSpeedUnit: 10
+  maximumDamage: 25
+  hitCooldown: 0.25
 --- !u!1 &407796426
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,7 +936,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetHealth: {fileID: 328356450}
   slider: {fileID: 417019487}
-  resetTime: 1.5
   playerCamera: {fileID: 2062496783}
   showAngleDegrees: 22
   minLookUpDot: 0.1
@@ -2433,7 +2434,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2030850377}
+      addedObject: {fileID: 2030850383}
     - targetCorrespondingSourceObject: {fileID: 1767192433, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
         type: 3}
       insertIndex: -1
@@ -4358,10 +4359,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6b602d98cbadf64b9ff32a2443e3b68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMultiplier: 1
-  minPunchSpeed: 0.8
-  baseDamage: 10
-  hitCooldownSeconds: 0.25
+  playerHealth: {fileID: 2030850383}
+  hitZone: {fileID: 1405558639}
 --- !u!54 &1405558641
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5105,6 +5104,12 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.2, y: 1.4, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!95 &1847252542 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: ef03540cc64e91e498397736f648ed74,
+    type: 3}
+  m_PrefabInstance: {fileID: 558533958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1856427716
 GameObject:
   m_ObjectHideFlags: 0
@@ -5482,7 +5487,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 977138268}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2030850377
+--- !u!114 &2030850383
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5491,11 +5496,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2030850370}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83841d16661857f47b951a345d70444d, type: 3}
+  m_Script: {fileID: 11500000, guid: 01bb0731ddf9db843be1a40207473113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  currentHealth: 0
 --- !u!1 &2062496777 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1767192433, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
@@ -5570,14 +5574,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a21eca23533b543b6acf92df2f2164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: {fileID: 2030850377}
+  playerHealth: {fileID: 2030850383}
   damageVolume: {fileID: 1984918364}
   fullFadeImage: {fileID: 1627086033}
   koText: {fileID: 1471474814}
   maxLowHealthIntensity: 0.65
   hitFlashIntensity: 0.25
-  fadeToKOScreen: 0.35
-  restartDelayAfterBlack: 2
+  hitFlashFadeSpeed: 1
+  koFadeDuration: 0.35
+  koScreenDuration: 5
 --- !u!1 &2086858410
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,21 +1,28 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class HandVelocityTracker : MonoBehaviour
 {
     public Vector3 Velocity { get; private set; }
 
-    private Vector3 _prevPos;
+    private Vector3 previousPosition;
 
-    void Start()
+    private void OnEnable()
     {
-        _prevPos = transform.position;
+        ResetVelocity();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        // Use FixedUpdate because physics collisions happen on fixed timesteps
-        var currentPos = transform.position;
-        Velocity = (currentPos - _prevPos) / Time.fixedDeltaTime;
-        _prevPos = currentPos;
+        Vector3 currentPosition = transform.position;
+
+        Velocity = (currentPosition - previousPosition) / Time.fixedDeltaTime;
+        previousPosition = currentPosition;
+    }
+
+    private void ResetVelocity()
+    {
+        previousPosition = transform.position;
+        Velocity = Vector3.zero;
     }
 }
