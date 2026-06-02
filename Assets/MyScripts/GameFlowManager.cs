@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class GameFlowManager : MonoBehaviour
@@ -26,6 +27,14 @@ public class GameFlowManager : MonoBehaviour
     [Header("Player")]
     [SerializeField] private Health playerHealth;
     [SerializeField] private PlayerHit[] playerHitReceivers;
+    [SerializeField] private GameObject locomotionSystem;
+
+    [Header("Result Transition")]
+    [SerializeField] private Transform xrOrigin;
+    [SerializeField] private Transform playerCamera;
+    [SerializeField] private Image blackFadeImage;
+    [SerializeField, Min(0f)] private float resultDelay = 2f;
+    [SerializeField, Min(0.01f)] private float fadeDuration = 0.35f;
 
     [Header("Menu")]
     [SerializeField] private GameObject mainMenuRoot;
@@ -46,6 +55,8 @@ public class GameFlowManager : MonoBehaviour
     private Coroutine countdownRoutine;
     private bool referencesValid;
 
+    private Vector3 startingPlayerViewPosition;
+
     private void Awake()
     {
         referencesValid = ValidateReferences();
@@ -55,6 +66,11 @@ public class GameFlowManager : MonoBehaviour
             enabled = false;
             return;
         }
+
+        startingPlayerViewPosition = playerCamera.position;
+
+        SetBlackFadeAlpha(0f);
+        blackFadeImage.enabled = false;
 
         SetGameplayActive(false);
     }
@@ -115,7 +131,6 @@ public class GameFlowManager : MonoBehaviour
         Debug.Log("Entered Main Menu state.", this);
     }
 
-    [ContextMenu("Start Fight")]
     public void StartFight()
     {
         if (!referencesValid)
@@ -183,7 +198,7 @@ public class GameFlowManager : MonoBehaviour
         if (currentState != GameState.Fighting)
             return;
 
-        ShowResult(enemyKnockoutMessage);
+        StartCoroutine(ShowResultTransition(enemyKnockoutMessage));
     }
 
     private void HandlePlayerKnockedOut()
@@ -191,10 +206,10 @@ public class GameFlowManager : MonoBehaviour
         if (currentState != GameState.Fighting)
             return;
 
-        ShowResult(playerKnockoutMessage);
+        StartCoroutine(ShowResultTransition(playerKnockoutMessage));
     }
 
-    private void ShowResult(string message)
+    private IEnumerator ShowResultTransition(string message)
     {
         currentState = GameState.Ended;
 
@@ -202,10 +217,22 @@ public class GameFlowManager : MonoBehaviour
 
         mainMenuRoot.SetActive(false);
         countdownRoot.SetActive(false);
+        resultRoot.SetActive(false);
         enemyHealthBarRoot.SetActive(false);
+
+        SetMenuInteractionActive(false);
+
+        yield return new WaitForSeconds(resultDelay);
+
+        yield return FadeScreen(1f);
+
+        RecenterPlayerToStartingPosition();
+        ResetFight();
 
         resultTitleText.text = message;
         resultRoot.SetActive(true);
+
+        yield return FadeScreen(0f);
 
         SetMenuInteractionActive(true);
 
@@ -219,10 +246,52 @@ public class GameFlowManager : MonoBehaviour
         playerHealth.ResetHealth();
     }
 
+    private void RecenterPlayerToStartingPosition()
+    {
+        Vector3 positionDifference = startingPlayerViewPosition - playerCamera.position;
+
+        xrOrigin.position += new Vector3(
+            positionDifference.x,
+            0f,
+            positionDifference.z
+        );
+    }
+
+    private IEnumerator FadeScreen(float targetAlpha)
+    {
+        blackFadeImage.enabled = true;
+
+        float startingAlpha = blackFadeImage.color.a;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float progress = Mathf.Clamp01(elapsedTime / fadeDuration);
+            float alpha = Mathf.Lerp(startingAlpha, targetAlpha, progress);
+
+            SetBlackFadeAlpha(alpha);
+
+            yield return null;
+        }
+
+        SetBlackFadeAlpha(targetAlpha);
+
+        if (Mathf.Approximately(targetAlpha, 0f))
+            blackFadeImage.enabled = false;
+    }
+
+    private void SetBlackFadeAlpha(float alpha)
+    {
+        blackFadeImage.color = new Color(0f, 0f, 0f, alpha);
+    }
+
     private void SetGameplayActive(bool active)
     {
         enemy.enabled = active;
         enemyHitReceiver.enabled = active;
+        locomotionSystem.SetActive(active);
 
         foreach (PlayerHit playerHitReceiver in playerHitReceivers)
             playerHitReceiver.enabled = active;
@@ -278,6 +347,30 @@ public class GameFlowManager : MonoBehaviour
         if (playerHealth == null)
         {
             Debug.LogError("GameFlowManager requires the player Health reference.", this);
+            return false;
+        }
+
+        if (locomotionSystem == null)
+        {
+            Debug.LogError("GameFlowManager requires the player's Locomotion System object.", this);
+            return false;
+        }
+
+        if (xrOrigin == null)
+        {
+            Debug.LogError("GameFlowManager requires the XR Origin Transform.", this);
+            return false;
+        }
+
+        if (playerCamera == null)
+        {
+            Debug.LogError("GameFlowManager requires the player camera Transform.", this);
+            return false;
+        }
+
+        if (blackFadeImage == null)
+        {
+            Debug.LogError("GameFlowManager requires the black fade Image.", this);
             return false;
         }
 
