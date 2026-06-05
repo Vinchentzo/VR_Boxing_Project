@@ -65,9 +65,26 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+        //add as a safe check
+        ConfigureRigidbody();
+
         startingPosition = rigidBody.position;
         startingRotation = rigidBody.rotation;
         fixedY = startingPosition.y;
+    }
+
+    private void ConfigureRigidbody()
+    {
+        if (rigidBody == null)
+            return;
+
+        rigidBody.isKinematic = true;
+        rigidBody.useGravity = false;
+        rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+
+        // The enemy can rotate left/right, but should not fall or tilt.
+        rigidBody.constraints = RigidbodyConstraints.FreezeRotationX |
+                                RigidbodyConstraints.FreezeRotationZ;
     }
 
     private void OnEnable()
@@ -75,7 +92,8 @@ public class Enemy : MonoBehaviour
         if (rigidBody == null || animator == null)
             return;
 
-        rigidBody.isKinematic = false;
+        //add as a safe check
+        ConfigureRigidbody();
 
         ResetRuntimeState();
     }
@@ -167,12 +185,6 @@ public class Enemy : MonoBehaviour
 
         rigidBody.position = startingPosition;
         rigidBody.rotation = startingRotation;
-
-        if (!rigidBody.isKinematic)
-        {
-            rigidBody.velocity = Vector3.zero;
-            rigidBody.angularVelocity = Vector3.zero;
-        }
 
         ResetRuntimeState();
     }
@@ -346,9 +358,6 @@ public class Enemy : MonoBehaviour
 
     private void ApplyMovement(Vector3 movement)
     {
-        rigidBody.velocity = Vector3.zero;
-        rigidBody.angularVelocity = Vector3.zero;
-
         Vector3 newPosition = rigidBody.position + movement * Time.fixedDeltaTime;
 
         newPosition.x = Mathf.Clamp(newPosition.x, arenaMin.x, arenaMax.x);
