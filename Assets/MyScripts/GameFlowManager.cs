@@ -21,7 +21,6 @@ public class GameFlowManager : MonoBehaviour
     [Header("Enemy")]
     [SerializeField] private Enemy enemy;
     [SerializeField] private Health enemyHealth;
-    [SerializeField] private PunchTargetHit enemyHitReceiver;
     [SerializeField] private GameObject enemyHealthBarRoot;
 
     [Header("Player")]
@@ -290,7 +289,6 @@ public class GameFlowManager : MonoBehaviour
     private void SetGameplayActive(bool active)
     {
         enemy.enabled = active;
-        enemyHitReceiver.enabled = active;
         locomotionSystem.SetActive(active);
 
         foreach (PlayerHit playerHitReceiver in playerHitReceivers)
@@ -326,12 +324,6 @@ public class GameFlowManager : MonoBehaviour
         if (enemyHealth == null)
         {
             Debug.LogError("GameFlowManager requires the enemy Health reference.", this);
-            return false;
-        }
-
-        if (enemyHitReceiver == null)
-        {
-            Debug.LogError("GameFlowManager requires the enemy PunchTargetHit reference.", this);
             return false;
         }
 

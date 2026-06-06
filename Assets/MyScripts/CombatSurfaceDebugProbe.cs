@@ -39,9 +39,9 @@ public class CombatSurfaceDebugProbe : MonoBehaviour
         //    return;
         //}
 
-        Debug.Log(
-            $"{name} touched {surface.Side} {surface.SurfaceType}",
-            other
-        );
+        //Debug.Log(
+        //    $"{name} touched {surface.Side} {surface.SurfaceType}",
+        //    other
+        //);
     }
 }

@@ -30,8 +30,15 @@ public class CombatSurface : MonoBehaviour
     [SerializeField] private CombatantSide side = CombatantSide.Unknown;
     [SerializeField] private CombatSurfaceType surfaceType = CombatSurfaceType.Unknown;
 
+    [Header("Tuning")]
+    [SerializeField] private float damageMultiplier = 1f;
+
+    private Health ownerHealth;
+
     public CombatantSide Side => side;
     public CombatSurfaceType SurfaceType => surfaceType;
+    public float DamageMultiplier => damageMultiplier;
+    public Health OwnerHealth => ownerHealth;
 
     public bool IsDamageTarget =>
         surfaceType == CombatSurfaceType.Head ||
@@ -41,4 +48,20 @@ public class CombatSurface : MonoBehaviour
     public bool IsGuard =>
         surfaceType == CombatSurfaceType.GuardGlove ||
         surfaceType == CombatSurfaceType.GuardForearm;
+
+    private void Awake()
+    {
+        ownerHealth = GetComponentInParent<Health>();
+
+        if (ownerHealth == null && IsDamageTarget)
+        {
+            Debug.LogError(
+                $"{nameof(CombatSurface)} on {name} is a damage target but could not find Health in parent objects.",
+                this
+            );
+
+            enabled = false;
+            return;
+        }
+    }
 }
