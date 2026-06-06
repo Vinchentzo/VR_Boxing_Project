@@ -65,4 +65,47 @@ public class CombatContactResolver : MonoBehaviour
         float rawDamage = punchSpeed * damagePerSpeedUnit * surface.DamageMultiplier;
         return Mathf.Min(rawDamage, maximumPlayerPunchDamage);
     }
+
+    public CombatContactResult ResolveEnemyGloveContact(CombatSurface surface)
+    {
+        if (surface == null)
+            return CombatContactResult.None;
+
+        if (surface.Side != CombatantSide.Player)
+            return CombatContactResult.None;
+
+        switch (surface.SurfaceType)
+        {
+            case CombatSurfaceType.Head:
+                return CombatContactResult.HeadHit;
+
+            case CombatSurfaceType.Chest:
+            case CombatSurfaceType.Abdomen:
+                return CombatContactResult.BodyHit;
+
+            case CombatSurfaceType.GuardGlove:
+            case CombatSurfaceType.GuardForearm:
+                return CombatContactResult.Blocked;
+
+            default:
+                return CombatContactResult.None;
+        }
+    }
+    public float CalculateEnemyPunchDamage(
+    CombatContactResult result,
+    CombatSurface surface,
+    float baseAttackDamage)
+    {
+        if (surface == null)
+            return 0f;
+
+        if (result == CombatContactResult.Blocked)
+            return 0f;
+
+        if (result != CombatContactResult.HeadHit &&
+            result != CombatContactResult.BodyHit)
+            return 0f;
+
+        return baseAttackDamage * surface.DamageMultiplier;
+    }
 }

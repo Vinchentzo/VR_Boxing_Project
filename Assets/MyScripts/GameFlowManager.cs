@@ -25,7 +25,6 @@ public class GameFlowManager : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private Health playerHealth;
-    [SerializeField] private PlayerHit[] playerHitReceivers;
     [SerializeField] private GameObject locomotionSystem;
 
     [Header("Result Transition")]
@@ -290,9 +289,6 @@ public class GameFlowManager : MonoBehaviour
     {
         enemy.enabled = active;
         locomotionSystem.SetActive(active);
-
-        foreach (PlayerHit playerHitReceiver in playerHitReceivers)
-            playerHitReceiver.enabled = active;
     }
 
     private void SetMenuInteractionActive(bool active)
@@ -370,21 +366,6 @@ public class GameFlowManager : MonoBehaviour
         {
             Debug.LogError("Enemy Health and Player Health must reference different Health components.", this);
             return false;
-        }
-
-        if (playerHitReceivers == null || playerHitReceivers.Length == 0)
-        {
-            Debug.LogError("GameFlowManager requires at least one player PlayerHit receiver.", this);
-            return false;
-        }
-
-        foreach (PlayerHit playerHitReceiver in playerHitReceivers)
-        {
-            if (playerHitReceiver == null)
-            {
-                Debug.LogError("GameFlowManager has an unassigned player hit receiver.", this);
-                return false;
-            }
         }
 
         if (mainMenuRoot == null)

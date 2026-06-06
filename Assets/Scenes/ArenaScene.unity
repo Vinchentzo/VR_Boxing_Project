@@ -176,7 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: 1
   surfaceType: 4
-  damageMultiplier: 1
+  damageMultiplier: 0
 --- !u!1 &95976356
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,9 +382,6 @@ MonoBehaviour:
   enemyHealth: {fileID: 328356450}
   enemyHealthBarRoot: {fileID: 261831830}
   playerHealth: {fileID: 2030850383}
-  playerHitReceivers:
-  - {fileID: 1405558640}
-  - {fileID: 289794809}
   locomotionSystem: {fileID: 1965192455}
   xrOrigin: {fileID: 2030850371}
   playerCamera: {fileID: 2062496783}
@@ -465,8 +462,6 @@ GameObject:
   - component: {fileID: 289794805}
   - component: {fileID: 289794806}
   - component: {fileID: 289794810}
-  - component: {fileID: 289794808}
-  - component: {fileID: 289794809}
   - component: {fileID: 289794811}
   m_Layer: 2
   m_Name: Player Head Hitbox
@@ -511,33 +506,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.07601497
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &289794808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289794804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69b4badfa09f2b24d9a7ba29356660ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageMultiplier: 1.5
---- !u!114 &289794809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289794804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6b602d98cbadf64b9ff32a2443e3b68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerHealth: {fileID: 2030850383}
-  hitZone: {fileID: 289794808}
 --- !u!54 &289794810
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -579,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: 1
   surfaceType: 1
-  damageMultiplier: 1
+  damageMultiplier: 1.5
 --- !u!1 &328356443
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,7 +582,7 @@ MonoBehaviour:
   player: {fileID: 1405558636}
   animator: {fileID: 1847252542}
   moveSpeed: 1
-  desiredDistance: 0.5
+  desiredDistance: 1
   distanceBuffer: 0.1
   turnSpeed: 360
   arenaMin: {x: -2.7, y: -2.5}
@@ -4324,7 +4292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: 0
   surfaceType: 0
-  damageMultiplier: 1
+  damageMultiplier: 0
 --- !u!114 &1219168884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4500,7 +4468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: 1
   surfaceType: 4
-  damageMultiplier: 1
+  damageMultiplier: 0
 --- !u!114 &1314883216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4526,8 +4494,6 @@ GameObject:
   - component: {fileID: 1405558636}
   - component: {fileID: 1405558637}
   - component: {fileID: 1405558641}
-  - component: {fileID: 1405558639}
-  - component: {fileID: 1405558640}
   - component: {fileID: 1405558642}
   - component: {fileID: 1405558643}
   m_Layer: 2
@@ -4575,33 +4541,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1405558639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405558635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69b4badfa09f2b24d9a7ba29356660ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageMultiplier: 1
---- !u!114 &1405558640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405558635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6b602d98cbadf64b9ff32a2443e3b68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerHealth: {fileID: 2030850383}
-  hitZone: {fileID: 1405558639}
 --- !u!54 &1405558641
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4774,14 +4713,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1494509573}
   - component: {fileID: 1494509574}
-  - component: {fileID: 1494509575}
   m_Layer: 0
   m_Name: Body Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1494509573
 Transform:
   m_ObjectHideFlags: 0
@@ -4820,19 +4758,6 @@ CapsuleCollider:
   m_Height: 1.545095
   m_Direction: 1
   m_Center: {x: -0, y: 0.71433294, z: 0}
---- !u!114 &1494509575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494509572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69b4badfa09f2b24d9a7ba29356660ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageMultiplier: 1
 --- !u!1 &1499560381
 GameObject:
   m_ObjectHideFlags: 0
@@ -5235,7 +5160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: 1
   surfaceType: 4
-  damageMultiplier: 1
+  damageMultiplier: 0
 --- !u!4 &1731696660 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8021001004253913084, guid: ef03540cc64e91e498397736f648ed74,
@@ -5254,7 +5179,6 @@ GameObject:
   - component: {fileID: 1732827545}
   - component: {fileID: 1732827544}
   - component: {fileID: 1732827547}
-  - component: {fileID: 1732827543}
   - component: {fileID: 1732827546}
   m_Layer: 0
   m_Name: Head Hitbox
@@ -5278,19 +5202,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1771575866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1732827543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732827541}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69b4badfa09f2b24d9a7ba29356660ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageMultiplier: 1.5
 --- !u!136 &1732827544
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5792,7 +5703,7 @@ GameObject:
   - component: {fileID: 1950826552}
   - component: {fileID: 1950826551}
   - component: {fileID: 1950826553}
-  - component: {fileID: 1950826554}
+  - component: {fileID: 1950826555}
   m_Layer: 0
   m_Name: Glove Hitbox
   m_TagString: Untagged
@@ -5876,7 +5787,7 @@ MonoBehaviour:
   side: 2
   surfaceType: 4
   damageMultiplier: 0
---- !u!114 &1950826554
+--- !u!114 &1950826555
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5885,10 +5796,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1950826549}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 069c193dff9de5647a2bd1529eebd23e, type: 3}
+  m_Script: {fileID: 11500000, guid: 109f7735fb8b35d4f86445fe7e422df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSide: 1
+  resolver: {fileID: 896066847}
 --- !u!1 &1965192455 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5167925059111895691, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
@@ -6153,7 +6064,7 @@ GameObject:
   - component: {fileID: 2093904551}
   - component: {fileID: 2093904550}
   - component: {fileID: 2093904552}
-  - component: {fileID: 2093904553}
+  - component: {fileID: 2093904554}
   m_Layer: 0
   m_Name: Glove Hitbox
   m_TagString: Untagged
@@ -6237,7 +6148,7 @@ MonoBehaviour:
   side: 2
   surfaceType: 4
   damageMultiplier: 0
---- !u!114 &2093904553
+--- !u!114 &2093904554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6246,10 +6157,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2093904548}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 069c193dff9de5647a2bd1529eebd23e, type: 3}
+  m_Script: {fileID: 11500000, guid: 109f7735fb8b35d4f86445fe7e422df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSide: 1
+  resolver: {fileID: 896066847}
 --- !u!1 &2108341765
 GameObject:
   m_ObjectHideFlags: 0

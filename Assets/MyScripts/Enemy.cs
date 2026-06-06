@@ -154,6 +154,11 @@ public class Enemy : MonoBehaviour
         ApplyMovement(movement);
     }
 
+    public bool CanDealAttackHit =>
+        state == State.Attack &&
+        !attackHitConsumed &&
+        IsAttackDamageWindowActive();
+
     /// <summary>
     /// Allows one valid collision to deal damage during the current attack.
     /// Prevents one jab from damaging both the player's head and body.
