@@ -156,27 +156,6 @@ Transform:
   - {fileID: 95976357}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &11444044 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 476247718037865272, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1636932987}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &11444050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 11444044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 1
-  surfaceType: 4
-  damageMultiplier: 0
 --- !u!1 &95976356
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +561,7 @@ MonoBehaviour:
   player: {fileID: 1405558636}
   animator: {fileID: 1847252542}
   moveSpeed: 1
-  desiredDistance: 1
+  desiredDistance: 0.5
   distanceBuffer: 0.1
   turnSpeed: 360
   arenaMin: {x: -2.7, y: -2.5}
@@ -592,7 +571,7 @@ MonoBehaviour:
   strafeChangeIntervalMax: 2
   attackDamage: 10
   attackCooldown: 2
-  attackChancePerCheck: 0.2
+  attackChancePerCheck: 0
   attackCheckInterval: 0.25
 --- !u!4 &328356446
 Transform:
@@ -1223,12 +1202,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 475195062}
   m_CullTransparentMesh: 1
---- !u!1 &493901390 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-    type: 3}
-  m_PrefabInstance: {fileID: 4838777716294685153}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &558533958
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1854,7 +1827,7 @@ GameObject:
   - component: {fileID: 707285983}
   - component: {fileID: 707285985}
   - component: {fileID: 707285984}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chest Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1919,12 +1892,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8982851401174954329, guid: f6336ac4ac8b4d34bc5072418cdc62a0,
     type: 3}
   m_PrefabInstance: {fileID: 977138268}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &794300052 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4997708214959616375, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1636932987}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &812739082 stripped
 Transform:
@@ -2207,7 +2174,7 @@ GameObject:
   - component: {fileID: 949420856}
   - component: {fileID: 949420857}
   - component: {fileID: 949420858}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Abdomen Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4102,7 +4069,7 @@ GameObject:
   - component: {fileID: 1146670167}
   - component: {fileID: 1146670168}
   - component: {fileID: 1146670169}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Forearm Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4258,55 +4225,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1636932987}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1173132952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 794300052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: def221102a21c49459ab8b51efb09d7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  armSpeed: 1
-  resetSpeed: 0.35
---- !u!1 &1219168877 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4986502229144128906, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-    type: 3}
-  m_PrefabInstance: {fileID: 4838777716294685153}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1219168883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219168877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 0
-  surfaceType: 0
-  damageMultiplier: 0
---- !u!114 &1219168884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219168877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec0f7b21ecfaf094a80f795f994e8ac8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resolver: {fileID: 896066847}
-  contactCooldown: 0.25
 --- !u!1 &1249986556
 GameObject:
   m_ObjectHideFlags: 0
@@ -4359,20 +4277,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4838777716294685153}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1254581673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 493901390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: def221102a21c49459ab8b51efb09d7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  armSpeed: 1
-  resetSpeed: 0.35
 --- !u!1 &1258622204
 GameObject:
   m_ObjectHideFlags: 0
@@ -4448,41 +4352,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1258622204}
   m_CullTransparentMesh: 1
---- !u!1 &1314883209 stripped
+--- !u!1 &1389523261 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 7097112680911859299, guid: b47d44b94ed41ff44af3c8f67b5514f5,
+  m_CorrespondingSourceObject: {fileID: 250970549288240741, guid: b47d44b94ed41ff44af3c8f67b5514f5,
     type: 3}
   m_PrefabInstance: {fileID: 1636932987}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1314883215
+--- !u!114 &1389523263
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1314883209}
+  m_GameObject: {fileID: 1389523261}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
+  m_Script: {fileID: 11500000, guid: 93e01ae7494738341825d6cfc0e7ec48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  side: 1
-  surfaceType: 4
-  damageMultiplier: 0
---- !u!114 &1314883216
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  searchPadding: 0.05
+  skinDistance: 0.005
+  maxStepDistance: 0.025
+  maxMoveSteps: 12
+  penetrationIterations: 4
+--- !u!114 &1389523264
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1314883209}
-  m_Enabled: 1
+  m_GameObject: {fileID: 1389523261}
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec0f7b21ecfaf094a80f795f994e8ac8, type: 3}
+  m_Script: {fileID: 11500000, guid: 7667600a6cd3c044b9cf808622dae45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolver: {fileID: 896066847}
-  contactCooldown: 0.25
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  searchPadding: 0.05
+  logInterval: 0.25
 --- !u!1 &1405558635
 GameObject:
   m_ObjectHideFlags: 0
@@ -4945,6 +4857,49 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.2, y: 1.4, z: 7}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1550518408 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2600123947228570351, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+    type: 3}
+  m_PrefabInstance: {fileID: 4838777716294685153}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1550518410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550518408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e01ae7494738341825d6cfc0e7ec48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  searchPadding: 0.05
+  skinDistance: 0.005
+  maxStepDistance: 0.025
+  maxMoveSteps: 12
+  penetrationIterations: 4
+--- !u!114 &1550518411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550518408}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7667600a6cd3c044b9cf808622dae45f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  searchPadding: 0.05
+  logInterval: 0.25
 --- !u!1 &1627086031
 GameObject:
   m_ObjectHideFlags: 0
@@ -5028,11 +4983,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 440327402}
     m_Modifications:
-    - target: {fileID: 476247718037865272, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      propertyPath: m_Name
-      value: Palm Hitbox
-      objectReference: {fileID: 0}
     - target: {fileID: 1304323397966676054, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5083,56 +5033,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3602315368645021369, guid: b47d44b94ed41ff44af3c8f67b5514f5,
+    - target: {fileID: 4556330873201217817, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: resolver
+      value: 
+      objectReference: {fileID: 896066847}
     - target: {fileID: 4997708214959616375, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
       propertyPath: m_Name
       value: Right Glove
       objectReference: {fileID: 0}
-    - target: {fileID: 6549887450815150933, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      propertyPath: m_Name
-      value: Right Boxing Glove
-      objectReference: {fileID: 0}
-    - target: {fileID: 7097112680911859299, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      propertyPath: m_Name
-      value: Knuckle Hitbox
-      objectReference: {fileID: 0}
-    - target: {fileID: 8080763048219345852, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8872607718754464654, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      propertyPath: m_Name
-      value: Glove Hitboxes
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4997708214959616375, guid: b47d44b94ed41ff44af3c8f67b5514f5,
+    - targetCorrespondingSourceObject: {fileID: 250970549288240741, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1173132952}
-    - targetCorrespondingSourceObject: {fileID: 7097112680911859299, guid: b47d44b94ed41ff44af3c8f67b5514f5,
+      addedObject: {fileID: 1389523263}
+    - targetCorrespondingSourceObject: {fileID: 250970549288240741, guid: b47d44b94ed41ff44af3c8f67b5514f5,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1314883215}
-    - targetCorrespondingSourceObject: {fileID: 7097112680911859299, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1314883216}
-    - targetCorrespondingSourceObject: {fileID: 476247718037865272, guid: b47d44b94ed41ff44af3c8f67b5514f5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 11444050}
+      addedObject: {fileID: 1389523264}
   m_SourcePrefab: {fileID: 100100000, guid: b47d44b94ed41ff44af3c8f67b5514f5, type: 3}
 --- !u!4 &1637753369 stripped
 Transform:
@@ -5140,27 +5062,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 558533958}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1673416300 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 673491161108734081, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-    type: 3}
-  m_PrefabInstance: {fileID: 4838777716294685153}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1673416306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1673416300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 1
-  surfaceType: 4
-  damageMultiplier: 0
 --- !u!4 &1731696660 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8021001004253913084, guid: ef03540cc64e91e498397736f648ed74,
@@ -5180,7 +5081,7 @@ GameObject:
   - component: {fileID: 1732827544}
   - component: {fileID: 1732827547}
   - component: {fileID: 1732827546}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Head Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5309,7 +5210,7 @@ GameObject:
   - component: {fileID: 1781544344}
   - component: {fileID: 1781544345}
   - component: {fileID: 1781544346}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Forearm Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5704,7 +5605,7 @@ GameObject:
   - component: {fileID: 1950826551}
   - component: {fileID: 1950826553}
   - component: {fileID: 1950826555}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Glove Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6065,7 +5966,7 @@ GameObject:
   - component: {fileID: 2093904550}
   - component: {fileID: 2093904552}
   - component: {fileID: 2093904554}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Glove Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6244,25 +6145,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1164870693}
     m_Modifications:
-    - target: {fileID: 673491161108734081, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_Name
-      value: Palm Hitbox
-      objectReference: {fileID: 0}
-    - target: {fileID: 2134786954119505457, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
       propertyPath: m_Name
       value: Left Glove
-      objectReference: {fileID: 0}
-    - target: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3109866251002974599, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
@@ -6314,46 +6200,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4986502229144128906, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+    - target: {fileID: 8530392408197669174, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
-      propertyPath: m_Name
-      value: Knuckle Hitbox
-      objectReference: {fileID: 0}
-    - target: {fileID: 5247440664666246134, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5360572720345022342, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_Name
-      value: Left Boxing Glove
-      objectReference: {fileID: 0}
-    - target: {fileID: 6281117428459842826, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      propertyPath: m_Name
-      value: Glove Hitboxes
-      objectReference: {fileID: 0}
+      propertyPath: resolver
+      value: 
+      objectReference: {fileID: 896066847}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2877903737585578733, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+    - targetCorrespondingSourceObject: {fileID: 2600123947228570351, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1254581673}
-    - targetCorrespondingSourceObject: {fileID: 4986502229144128906, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+      addedObject: {fileID: 1550518410}
+    - targetCorrespondingSourceObject: {fileID: 2600123947228570351, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1219168883}
-    - targetCorrespondingSourceObject: {fileID: 4986502229144128906, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1219168884}
-    - targetCorrespondingSourceObject: {fileID: 673491161108734081, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1673416306}
+      addedObject: {fileID: 1550518411}
   m_SourcePrefab: {fileID: 100100000, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

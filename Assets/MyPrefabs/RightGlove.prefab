@@ -1,5 +1,38 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &250970549288240741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8539994858729391958}
+  m_Layer: 0
+  m_Name: Right Visible Glove
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8539994858729391958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 250970549288240741}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5885658545907589615}
+  - {fileID: 3863361518809114946}
+  m_Father: {fileID: 1304323397966676054}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &476247718037865272
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,8 +43,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8058103608987186860}
   - component: {fileID: 3602315368645021369}
+  - component: {fileID: 5397081984959606531}
   m_Layer: 0
-  m_Name: PalmHitbox
+  m_Name: Palm Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +81,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -55,6 +89,21 @@ CapsuleCollider:
   m_Height: 0.20833942
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5397081984959606531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476247718037865272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  side: 1
+  surfaceType: 4
+  damageMultiplier: 0
 --- !u!1 &4997708214959616375
 GameObject:
   m_ObjectHideFlags: 0
@@ -66,6 +115,7 @@ GameObject:
   - component: {fileID: 1304323397966676054}
   - component: {fileID: 816955391184465211}
   - component: {fileID: 7935296878677789598}
+  - component: {fileID: 7984201469608690054}
   m_Layer: 0
   m_Name: RightGlove
   m_TagString: Hand
@@ -86,8 +136,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5885658545907589615}
-  - {fileID: 3863361518809114946}
+  - {fileID: 8539994858729391958}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &816955391184465211
@@ -129,6 +178,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4d988918c9cbe498c6686176ce8a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7984201469608690054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4997708214959616375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: def221102a21c49459ab8b51efb09d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armSpeed: 1
+  resetSpeed: 0.35
 --- !u!1 &7097112680911859299
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,8 +202,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5349983757885233181}
   - component: {fileID: 8080763048219345852}
+  - component: {fileID: 8352537267957651312}
+  - component: {fileID: 4556330873201217817}
   m_Layer: 0
-  m_Name: KnuckleHitbox
+  m_Name: Knuckle Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,12 +241,41 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.07202045
   m_Center: {x: -0.0013356358, y: -0.020684801, z: 0}
+--- !u!114 &8352537267957651312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7097112680911859299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d8f84d1c3f9e4bbad7ceafd81ec2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  side: 1
+  surfaceType: 4
+  damageMultiplier: 0
+--- !u!114 &4556330873201217817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7097112680911859299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0f7b21ecfaf094a80f795f994e8ac8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolver: {fileID: 0}
+  contactCooldown: 0.25
 --- !u!1 &8872607718754464654
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3863361518809114946}
   m_Layer: 0
-  m_Name: GloveHitboxes
+  m_Name: Glove Hitboxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,14 +300,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8872607718754464654}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5349983757885233181}
   - {fileID: 8058103608987186860}
-  m_Father: {fileID: 1304323397966676054}
+  m_Father: {fileID: 8539994858729391958}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6207286567798375940
 PrefabInstance:
@@ -221,57 +315,57 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1304323397966676054}
+    m_TransformParent: {fileID: 8539994858729391958}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.12
+      value: 0.119999975
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.12
+      value: 0.11999996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.12
+      value: 0.11999998
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.01
+      value: -0.009999992
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.11
+      value: -0.110000044
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.35355335
+      value: 0.35355338
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.61237246
+      value: 0.6123725
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.35355335
+      value: -0.35355338
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.61237246
+      value: -0.6123725
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
@@ -296,7 +390,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ce5a8f3b2de488343838411c09b9f723,
         type: 3}
       propertyPath: m_Name
-      value: BoxingGlove_Right
+      value: Right Boxing Glove
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
