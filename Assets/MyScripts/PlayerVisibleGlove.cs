@@ -99,6 +99,20 @@ public class PlayerVisibleGlove : MonoBehaviour
 
     private Vector3 SolvePositionToward(Vector3 currentPosition, Vector3 desiredPosition)
     {
+        // First, make sure current position is not already penetrating.
+        // This can happen if the enemy animation/body moves into the glove.
+        transform.position = currentPosition;
+        transform.rotation = resolvedWorldRotation;
+
+        Vector3 startCorrection = ResolvePenetrations();
+
+        if (startCorrection.sqrMagnitude > 0.000001f)
+        {
+            currentPosition += startCorrection;
+            transform.position = currentPosition;
+            transform.rotation = resolvedWorldRotation;
+        }
+
         Vector3 toTarget = desiredPosition - currentPosition;
         float totalDistance = toTarget.magnitude;
 
@@ -108,44 +122,76 @@ public class PlayerVisibleGlove : MonoBehaviour
         int stepCount = Mathf.CeilToInt(totalDistance / maxStepDistance);
         stepCount = Mathf.Clamp(stepCount, 1, maxMoveSteps);
 
-        float stepDistance = totalDistance / stepCount;
+        Vector3 lastSafePosition = currentPosition;
 
-        for (int step = 0; step < stepCount; step++)
+        for (int step = 1; step <= stepCount; step++)
         {
-            Vector3 beforeStep = currentPosition;
-
-            Vector3 candidatePosition = Vector3.MoveTowards(
-                currentPosition,
-                desiredPosition,
-                stepDistance
-            );
+            float t = step / (float)stepCount;
+            Vector3 candidatePosition = Vector3.Lerp(currentPosition, desiredPosition, t);
 
             transform.position = candidatePosition;
             transform.rotation = resolvedWorldRotation;
 
-            Vector3 correction = ResolvePenetrations();
-            Vector3 correctedPosition = candidatePosition + correction;
-
-            transform.position = correctedPosition;
-            transform.rotation = resolvedWorldRotation;
-
-            if (correction.sqrMagnitude > 0.000001f)
+            if (HasAnyPenetration())
             {
-                Vector3 intendedMove = candidatePosition - beforeStep;
-                Vector3 correctedMove = correctedPosition - beforeStep;
-
-                if (intendedMove.sqrMagnitude > 0.000001f &&
-                    Vector3.Dot(correctedMove, intendedMove) <= 0f)
-                {
-                    return correctedPosition;
-                }
+                // Direct path is blocked.
+                // Do not slide sideways.
+                transform.position = lastSafePosition;
+                transform.rotation = resolvedWorldRotation;
+                return lastSafePosition;
             }
 
-            currentPosition = correctedPosition;
+            lastSafePosition = candidatePosition;
         }
 
-        return currentPosition;
+        return desiredPosition;
     }
+
+
+    private bool HasAnyPenetration()
+    {
+        foreach (Collider gloveCollider in gloveColliders)
+        {
+            if (gloveCollider == null || !gloveCollider.enabled)
+                continue;
+
+            Bounds bounds = gloveCollider.bounds;
+            float searchRadius = bounds.extents.magnitude + searchPadding;
+
+            int hitCount = Physics.OverlapSphereNonAlloc(
+                bounds.center,
+                searchRadius,
+                overlapResults,
+                blockingLayers,
+                QueryTriggerInteraction.Collide
+            );
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider enemyCollider = overlapResults[i];
+
+                if (enemyCollider == null || !enemyCollider.enabled)
+                    continue;
+
+                bool penetrating = Physics.ComputePenetration(
+                    gloveCollider,
+                    gloveCollider.transform.position,
+                    gloveCollider.transform.rotation,
+                    enemyCollider,
+                    enemyCollider.transform.position,
+                    enemyCollider.transform.rotation,
+                    out _,
+                    out float distance
+                );
+
+                if (penetrating && distance > 0.0001f)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
 
     private Vector3 ResolvePenetrations()
     {
@@ -172,6 +218,8 @@ public class PlayerVisibleGlove : MonoBehaviour
 
         return totalCorrection;
     }
+
+    
 
     private Vector3 ComputeColliderCorrection(Collider gloveCollider)
     {

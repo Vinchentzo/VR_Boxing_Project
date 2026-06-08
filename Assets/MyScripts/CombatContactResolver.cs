@@ -27,7 +27,11 @@ public class CombatContactResolver : MonoBehaviour
             return CombatContactResult.None;
 
         if (punchSpeed < minimumPlayerPunchSpeed)
+        {
+            Debug.Log("Punch too slow!!!!!");
             return CombatContactResult.TooSlow;
+        }
+            
 
         switch (surface.SurfaceType)
         {

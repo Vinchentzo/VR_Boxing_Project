@@ -4374,9 +4374,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   searchPadding: 0.05
-  skinDistance: 0.005
-  maxStepDistance: 0.025
-  maxMoveSteps: 12
+  skinDistance: 0
+  maxStepDistance: 0.005
+  maxMoveSteps: 120
   penetrationIterations: 4
 --- !u!114 &1389523264
 MonoBehaviour:
@@ -4879,9 +4879,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   searchPadding: 0.05
-  skinDistance: 0.005
-  maxStepDistance: 0.025
-  maxMoveSteps: 12
+  skinDistance: 0
+  maxStepDistance: 0.005
+  maxMoveSteps: 120
   penetrationIterations: 4
 --- !u!114 &1550518411
 MonoBehaviour:
