@@ -577,7 +577,7 @@ MonoBehaviour:
   strafeChangeIntervalMax: 2
   attackDamage: 10
   attackCooldown: 2
-  attackChancePerCheck: 0.47
+  attackChancePerCheck: 0
   attackCheckInterval: 0.25
 --- !u!4 &328356446
 Transform:
@@ -2478,7 +2478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1680501587, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.6
       objectReference: {fileID: 0}
     - target: {fileID: 1680501587, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4503,6 +4503,74 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1749971128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1232195602
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_Name
+      value: XR Device Simulator
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
 --- !u!1 &1249986556
 GameObject:
   m_ObjectHideFlags: 0
@@ -4762,6 +4830,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bodyRoot: {fileID: 1637753369}
   head: {fileID: 1771575866}
+  punchTarget: {fileID: 2062496783}
   rightGloveTarget: {fileID: 502333100}
   leftGloveTarget: {fileID: 1305339599}
   rightElbowHint: {fileID: 422325895}
@@ -4775,9 +4844,20 @@ MonoBehaviour:
   rightElbowSideOffset: 0.42
   rightElbowForwardOffset: -0.05
   rightElbowDownOffset: 0.55
+  rightElbowJabSideAdd: 0.16
+  rightElbowJabForwardAdd: -0.08
+  rightElbowJabDownAdd: 0.02
   leftElbowSideOffset: -0.42
   leftElbowForwardOffset: -0.05
   leftElbowDownOffset: 0.55
+  autoJab: 1
+  autoJabInterval: 2
+  jabWindupDistance: 0.08
+  jabDistance: 0.17
+  jabWindupTime: 0.4
+  jabExtendTime: 0.18
+  jabHoldTime: 0.05
+  jabRetractTime: 0.22
   followSpeed: 180
 --- !u!1 &1389523261 stripped
 GameObject:
@@ -6765,3 +6845,4 @@ SceneRoots:
   - {fileID: 230464012}
   - {fileID: 2086858411}
   - {fileID: 9325384}
+  - {fileID: 1232195602}
