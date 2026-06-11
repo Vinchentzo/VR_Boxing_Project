@@ -51,12 +51,20 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [SerializeField] private float jabHoldTime = 0.05f;
     [SerializeField] private float jabRetractTime = 0.22f;
 
+    [Header("Jab Collision Stop")]
+    [SerializeField] private bool stopJabOnCollision = true;
+    [SerializeField] private LayerMask jabBlockMask;
+    [SerializeField] private float jabGloveRadius = 0.10f;
+    [SerializeField] private float jabCollisionSkin = 0.02f;
+
     [Header("Smoothing")]
     [SerializeField] private float followSpeed = 18f;
 
     private float jabTimer;
     private float autoJabTimer;
     private bool jabActive;
+    private bool jabBlocked;
+    private Vector3 jabBlockedPosition;
 
     private void Update()
     {
@@ -88,6 +96,7 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     private void StartJab()
     {
         jabActive = true;
+        jabBlocked = false;
         jabTimer = 0f;
     }
 
@@ -121,6 +130,36 @@ public class EnemyGuardTargetFollower : MonoBehaviour
                 windupPosition,
                 jabEndPosition
             );
+
+            float retractStartTime = jabWindupTime + jabExtendTime + jabHoldTime;
+
+            if (jabBlocked)
+            {
+                if (jabTimer < retractStartTime)
+                {
+                    rightTargetPosition = jabBlockedPosition;
+                }
+                else
+                {
+                    float retractT = (jabTimer - retractStartTime) / jabRetractTime;
+                    retractT = Smooth01(retractT);
+                    rightTargetPosition = Vector3.Lerp(jabBlockedPosition, rightGuardPosition, retractT);
+                }
+            }
+            else if (jabTimer >= jabWindupTime && jabTimer < retractStartTime)
+            {
+                rightTargetPosition = LimitJabByCollision(
+                    rightGloveTarget.position,
+                    rightTargetPosition,
+                    out bool blocked
+                );
+
+                if (blocked)
+                {
+                    jabBlocked = true;
+                    jabBlockedPosition = rightTargetPosition;
+                }
+            }
         }
 
         MoveTransform(rightGloveTarget, rightTargetPosition);
@@ -142,6 +181,50 @@ public class EnemyGuardTargetFollower : MonoBehaviour
             leftElbowDownOffset
         );
     }
+
+    private Vector3 LimitJabByCollision(
+    Vector3 currentPosition,
+    Vector3 desiredPosition,
+    out bool blocked
+)
+    {
+        blocked = false;
+
+        if (!stopJabOnCollision || jabBlockMask.value == 0)
+            return desiredPosition;
+
+        Vector3 movement = desiredPosition - currentPosition;
+        float distance = movement.magnitude;
+
+        if (distance < 0.0001f)
+            return desiredPosition;
+
+        Vector3 direction = movement / distance;
+
+        if (Physics.SphereCast(
+                currentPosition,
+                jabGloveRadius,
+                direction,
+                out RaycastHit hit,
+                distance,
+                jabBlockMask,
+                QueryTriggerInteraction.Collide
+            ))
+        {
+            Debug.Log(
+                $"Enemy jab blocked by: {hit.collider.name}, layer={LayerMask.LayerToName(hit.collider.gameObject.layer)}, distance={hit.distance:F3}",
+                hit.collider
+            );
+
+            blocked = true;
+
+            float safeDistance = Mathf.Max(0f, hit.distance - jabCollisionSkin);
+            return currentPosition + direction * safeDistance;
+        }
+
+        return desiredPosition;
+    }
+
     private float GetRightJabElbowInfluence01()
     {
         if (!jabActive)
