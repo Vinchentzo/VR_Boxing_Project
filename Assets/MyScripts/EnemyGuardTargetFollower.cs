@@ -8,6 +8,10 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [SerializeField] private Transform head;
     [SerializeField] private Transform punchTarget;
 
+    [Header("Animation Sync")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string jabAnimationTrigger = "";
+
     [Header("Glove Targets")]
     [SerializeField] private Transform rightGloveTarget;
     [SerializeField] private Transform leftGloveTarget;
@@ -36,6 +40,11 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [SerializeField] private float rightElbowJabForwardAdd = -0.08f;
     [SerializeField] private float rightElbowJabDownAdd = 0.02f;
 
+    [Header("Left Elbow Jab Motion")]
+    [SerializeField] private float leftElbowJabSideAdd = -0.16f;
+    [SerializeField] private float leftElbowJabForwardAdd = -0.08f;
+    [SerializeField] private float leftElbowJabDownAdd = 0.02f;
+
     [Header("Left Elbow Hint Offset")]
     [SerializeField] private float leftElbowSideOffset = -0.42f;
     [SerializeField] private float leftElbowForwardOffset = -0.05f;
@@ -44,6 +53,8 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [Header("Debug Right Jab")]
     [SerializeField] private bool autoJab = true;
     [SerializeField] private float autoJabInterval = 2f;
+    [SerializeField] private float minJabDistance = 0.35f;
+    [SerializeField] private float maxJabDistance = 1.8f;
     [SerializeField] private float jabWindupDistance = 0.08f;
     [SerializeField] private float jabDistance = 0.55f;
     [SerializeField] private float jabWindupTime = 0.10f;
@@ -57,6 +68,14 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [SerializeField] private float jabGloveRadius = 0.10f;
     [SerializeField] private float jabCollisionSkin = 0.02f;
 
+    [Header("Jab Contact Classification")]
+    [SerializeField] private CombatContactResolver contactResolver;
+    [SerializeField] private bool logJabSurface = true;
+
+    [Header("Jab Damage")]
+    [SerializeField] private float jabBaseDamage = 5f;
+    [SerializeField] private bool applyJabDamage = true;
+
     [Header("Smoothing")]
     [SerializeField] private float followSpeed = 18f;
 
@@ -65,6 +84,7 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     private bool jabActive;
     private bool jabBlocked;
     private Vector3 jabBlockedPosition;
+    private Vector3 lockedJabDirection;
 
     private void Update()
     {
@@ -74,8 +94,10 @@ public class EnemyGuardTargetFollower : MonoBehaviour
 
             if (autoJabTimer >= autoJabInterval)
             {
-                StartJab();
-                autoJabTimer = 0f;
+                if (TryStartJab())
+                {
+                    autoJabTimer = 0f;
+                }
             }
         }
 
@@ -93,11 +115,36 @@ public class EnemyGuardTargetFollower : MonoBehaviour
         }
     }
 
+    public bool TryStartJab()
+    {
+        if (jabActive)
+            return false;
+
+        if (!IsPunchTargetInJabRange())
+            return false;
+
+        StartJab();
+        return true;
+    }
+
     private void StartJab()
     {
+        Vector3 leftGuardPosition = GetPosition(
+            leftSideOffset,
+            leftForwardOffset,
+            leftDownOffset
+        );
+
+        lockedJabDirection = GetJabDirection(leftGuardPosition);
+
         jabActive = true;
         jabBlocked = false;
         jabTimer = 0f;
+
+        if (animator != null && !string.IsNullOrWhiteSpace(jabAnimationTrigger))
+        {
+            animator.SetTrigger(jabAnimationTrigger);
+        }
     }
 
     private void LateUpdate()
@@ -118,15 +165,16 @@ public class EnemyGuardTargetFollower : MonoBehaviour
         );
 
         Vector3 rightTargetPosition = rightGuardPosition;
+        Vector3 leftTargetPosition = leftGuardPosition;
 
         if (jabActive)
         {
-            Vector3 jabDirection = GetJabDirection(rightGuardPosition);
-            Vector3 windupPosition = rightGuardPosition - jabDirection * jabWindupDistance;
-            Vector3 jabEndPosition = rightGuardPosition + jabDirection * jabDistance;
+            Vector3 jabDirection = lockedJabDirection;
+            Vector3 windupPosition = leftGuardPosition - jabDirection * jabWindupDistance;
+            Vector3 jabEndPosition = leftGuardPosition + jabDirection * jabDistance;
 
-            rightTargetPosition = GetJabTargetPosition(
-                rightGuardPosition,
+            leftTargetPosition = GetJabTargetPosition(
+                leftGuardPosition,
                 windupPosition,
                 jabEndPosition
             );
@@ -137,48 +185,48 @@ public class EnemyGuardTargetFollower : MonoBehaviour
             {
                 if (jabTimer < retractStartTime)
                 {
-                    rightTargetPosition = jabBlockedPosition;
+                    leftTargetPosition = jabBlockedPosition;
                 }
                 else
                 {
                     float retractT = (jabTimer - retractStartTime) / jabRetractTime;
                     retractT = Smooth01(retractT);
-                    rightTargetPosition = Vector3.Lerp(jabBlockedPosition, rightGuardPosition, retractT);
+                    leftTargetPosition = Vector3.Lerp(jabBlockedPosition, leftGuardPosition, retractT);
                 }
             }
             else if (jabTimer >= jabWindupTime && jabTimer < retractStartTime)
             {
-                rightTargetPosition = LimitJabByCollision(
-                    rightGloveTarget.position,
-                    rightTargetPosition,
+                leftTargetPosition = LimitJabByCollision(
+                    leftGloveTarget.position,
+                    leftTargetPosition,
                     out bool blocked
                 );
 
                 if (blocked)
                 {
                     jabBlocked = true;
-                    jabBlockedPosition = rightTargetPosition;
+                    jabBlockedPosition = leftTargetPosition;
                 }
             }
         }
 
         MoveTransform(rightGloveTarget, rightTargetPosition);
-        MoveTransform(leftGloveTarget, leftGuardPosition);
+        MoveTransform(leftGloveTarget, leftTargetPosition);
 
-        float rightElbowJabT = GetRightJabElbowInfluence01();
+        float jabElbowT = GetJabElbowInfluence01();
 
         MoveTarget(
             rightElbowHint,
-            rightElbowSideOffset + rightElbowJabSideAdd * rightElbowJabT,
-            rightElbowForwardOffset + rightElbowJabForwardAdd * rightElbowJabT,
-            rightElbowDownOffset + rightElbowJabDownAdd * rightElbowJabT
+            rightElbowSideOffset,
+            rightElbowForwardOffset,
+            rightElbowDownOffset
         );
 
         MoveTarget(
             leftElbowHint,
-            leftElbowSideOffset,
-            leftElbowForwardOffset,
-            leftElbowDownOffset
+            leftElbowSideOffset + leftElbowJabSideAdd * jabElbowT,
+            leftElbowForwardOffset + leftElbowJabForwardAdd * jabElbowT,
+            leftElbowDownOffset + leftElbowJabDownAdd * jabElbowT
         );
     }
 
@@ -216,6 +264,8 @@ public class EnemyGuardTargetFollower : MonoBehaviour
                 hit.collider
             );
 
+            LogJabSurface(hit.collider);
+
             blocked = true;
 
             float safeDistance = Mathf.Max(0f, hit.distance - jabCollisionSkin);
@@ -225,7 +275,8 @@ public class EnemyGuardTargetFollower : MonoBehaviour
         return desiredPosition;
     }
 
-    private float GetRightJabElbowInfluence01()
+
+    private float GetJabElbowInfluence01()
     {
         if (!jabActive)
             return 0f;
@@ -335,5 +386,65 @@ public class EnemyGuardTargetFollower : MonoBehaviour
             desiredPosition,
             1f - Mathf.Exp(-followSpeed * Time.deltaTime)
         );
+    }
+
+    private void LogJabSurface(Collider hitCollider)
+    {
+        if (!logJabSurface || hitCollider == null)
+            return;
+
+        CombatSurface surface = hitCollider.GetComponentInParent<CombatSurface>();
+
+        if (surface == null)
+        {
+            Debug.Log(
+                $"Enemy jab hit {hitCollider.name}, but it has no CombatSurface.",
+                hitCollider
+            );
+            return;
+        }
+
+        CombatContactResult result = CombatContactResult.None;
+
+        if (contactResolver != null)
+        {
+            result = contactResolver.ResolveEnemyGloveContact(surface);
+        }
+
+        float appliedDamage = 0f;
+
+        if (applyJabDamage &&
+            contactResolver != null &&
+            surface.OwnerHealth != null)
+        {
+            appliedDamage = contactResolver.CalculateEnemyPunchDamage(
+                result,
+                surface,
+                jabBaseDamage
+            );
+
+            if (appliedDamage > 0f)
+            {
+                surface.OwnerHealth.TakeDamage(appliedDamage);
+            }
+        }
+
+        Debug.Log(
+            $"Enemy jab classified as {result}. Surface={surface.SurfaceType}, Side={surface.Side}, Collider={hitCollider.name}, Damage={appliedDamage:F1}",
+            hitCollider
+        );
+    }
+
+        private bool IsPunchTargetInJabRange()
+    {
+        if (punchTarget == null || bodyRoot == null)
+            return false;
+
+        Vector3 toTarget = punchTarget.position - bodyRoot.position;
+        toTarget.y = 0f;
+
+        float distance = toTarget.magnitude;
+
+        return distance >= minJabDistance && distance <= maxJabDistance;
     }
 }

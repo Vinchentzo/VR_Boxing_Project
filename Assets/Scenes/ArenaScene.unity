@@ -4566,6 +4566,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Device Simulator
       objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4742,6 +4747,7 @@ GameObject:
   - component: {fileID: 1386887577}
   - component: {fileID: 1386887578}
   - component: {fileID: 1386887579}
+  - component: {fileID: 1386887580}
   m_Layer: 0
   m_Name: Enemy Rig
   m_TagString: Untagged
@@ -4831,6 +4837,8 @@ MonoBehaviour:
   bodyRoot: {fileID: 1637753369}
   head: {fileID: 1771575866}
   punchTarget: {fileID: 2062496783}
+  animator: {fileID: 1847252542}
+  jabAnimationTrigger: Attack
   rightGloveTarget: {fileID: 502333100}
   leftGloveTarget: {fileID: 1305339599}
   rightElbowHint: {fileID: 422325895}
@@ -4847,24 +4855,47 @@ MonoBehaviour:
   rightElbowJabSideAdd: 0.16
   rightElbowJabForwardAdd: -0.08
   rightElbowJabDownAdd: 0.02
+  leftElbowJabSideAdd: -0.2
+  leftElbowJabForwardAdd: 0.08
+  leftElbowJabDownAdd: 0.02
   leftElbowSideOffset: -0.42
   leftElbowForwardOffset: -0.05
   leftElbowDownOffset: 0.55
-  autoJab: 1
+  autoJab: 0
   autoJabInterval: 2
+  minJabDistance: 0.35
+  maxJabDistance: 0.8
   jabWindupDistance: 0.08
   jabDistance: 0.17
-  jabWindupTime: 0.4
+  jabWindupTime: 0.3
   jabExtendTime: 0.18
-  jabHoldTime: 0.05
-  jabRetractTime: 0.22
+  jabHoldTime: 0
+  jabRetractTime: 0.1
   stopJabOnCollision: 1
   jabBlockMask:
     serializedVersion: 2
     m_Bits: 64
   jabGloveRadius: 0.2
   jabCollisionSkin: 0.02
+  contactResolver: {fileID: 896066847}
+  logJabSurface: 1
+  jabBaseDamage: 5
+  applyJabDamage: 1
   followSpeed: 180
+--- !u!114 &1386887580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386887574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadeb3659525f164cad85fc7ca2033c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guardFollower: {fileID: 1386887579}
+  jabInterval: 2
 --- !u!1 &1389523261 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 250970549288240741, guid: b47d44b94ed41ff44af3c8f67b5514f5,
@@ -6951,6 +6982,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5514022478945508711, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+        type: 3}
+      propertyPath: side
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5514022478945508711, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
+        type: 3}
+      propertyPath: surfaceType
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6281117428459842826, guid: 667cbf63e4de07840a9e0bb6e6ea8cbf,
         type: 3}
