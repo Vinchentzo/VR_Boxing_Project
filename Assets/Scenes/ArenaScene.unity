@@ -2099,7 +2099,7 @@ MonoBehaviour:
     m_Target: {fileID: 1305339599}
     m_Hint: {fileID: 1535250540}
     m_TargetPositionWeight: 1
-    m_TargetRotationWeight: 0
+    m_TargetRotationWeight: 1
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
@@ -4839,6 +4839,7 @@ MonoBehaviour:
   punchTarget: {fileID: 2062496783}
   animator: {fileID: 1847252542}
   jabAnimationTrigger: Attack
+  crossAnimationTrigger: 
   rightGloveTarget: {fileID: 502333100}
   leftGloveTarget: {fileID: 1305339599}
   rightElbowHint: {fileID: 422325895}
@@ -4852,17 +4853,15 @@ MonoBehaviour:
   rightElbowSideOffset: 0.42
   rightElbowForwardOffset: -0.05
   rightElbowDownOffset: 0.55
-  rightElbowJabSideAdd: 0.16
-  rightElbowJabForwardAdd: -0.08
-  rightElbowJabDownAdd: 0.02
+  rightElbowCrossSideAdd: 0.18
+  rightElbowCrossForwardAdd: -0.1
+  rightElbowCrossDownAdd: 0.02
   leftElbowJabSideAdd: -0.2
   leftElbowJabForwardAdd: 0.08
   leftElbowJabDownAdd: 0.02
   leftElbowSideOffset: -0.42
   leftElbowForwardOffset: -0.05
   leftElbowDownOffset: 0.55
-  autoJab: 0
-  autoJabInterval: 2
   minJabDistance: 0.35
   maxJabDistance: 0.8
   jabWindupDistance: 0.08
@@ -4871,17 +4870,34 @@ MonoBehaviour:
   jabExtendTime: 0.18
   jabHoldTime: 0
   jabRetractTime: 0.1
+  minCrossDistance: 0.45
+  maxCrossDistance: 1
+  crossWindupDistance: 0.1
+  crossDistance: 0.7
+  crossWindupTime: 0.14
+  crossExtendTime: 0.24
+  crossHoldTime: 0.05
+  crossRetractTime: 0.28
+  crossBaseDamage: 8
   stopJabOnCollision: 1
-  jabBlockMask:
+  punchBlockMask:
     serializedVersion: 2
     m_Bits: 64
-  jabGloveRadius: 0.2
-  jabCollisionSkin: 0.02
+  punchGloveRadius: 0.1
+  punchCollisionSkin: 0.02
+  useGloveCapsuleCasts: 1
   contactResolver: {fileID: 896066847}
   logJabSurface: 1
   jabBaseDamage: 5
   applyJabDamage: 1
   followSpeed: 180
+  controlGloveRotation: 1
+  rightGuardRotationOffset: {x: 0, y: -90, z: -30}
+  leftGuardRotationOffset: {x: 30, y: 90, z: 30}
+  rightPunchRotationOffset: {x: 80, y: 0, z: -10}
+  leftPunchRotationOffset: {x: 30, y: 120, z: 40}
+  leftGloveHitboxRoot: {fileID: 1950826550}
+  rightGloveHitboxRoot: {fileID: 2093904549}
 --- !u!114 &1386887580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4895,7 +4911,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guardFollower: {fileID: 1386887579}
-  jabInterval: 2
+  attackToTest: 2
+  attackInterval: 2
 --- !u!1 &1389523261 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 250970549288240741, guid: b47d44b94ed41ff44af3c8f67b5514f5,
@@ -6906,7 +6923,7 @@ MonoBehaviour:
     m_Target: {fileID: 502333100}
     m_Hint: {fileID: 422325895}
     m_TargetPositionWeight: 1
-    m_TargetRotationWeight: 0
+    m_TargetRotationWeight: 1
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
