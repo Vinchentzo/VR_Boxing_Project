@@ -24,11 +24,31 @@ public enum CombatSurfaceType
     OtherBody
 }
 
+public enum CombatReactionZone
+{
+    None,
+
+    // Head reactions
+    HeadFront,
+    HeadFrontLeft,
+    HeadFrontRight,
+    HeadBackLeft,
+    HeadBackRight,
+
+    // Body reactions
+    BodyFront,
+    BodyLeft,
+    BodyRight
+}
+
 public class CombatSurface : MonoBehaviour
 {
     [Header("Combat Surface")]
     [SerializeField] private CombatantSide side = CombatantSide.Unknown;
     [SerializeField] private CombatSurfaceType surfaceType = CombatSurfaceType.Unknown;
+
+    [Header("Reaction")]
+    [SerializeField] private CombatReactionZone reactionZone = CombatReactionZone.None;
 
     [Header("Tuning")]
     [SerializeField] private float damageMultiplier = 1f;
@@ -37,6 +57,7 @@ public class CombatSurface : MonoBehaviour
 
     public CombatantSide Side => side;
     public CombatSurfaceType SurfaceType => surfaceType;
+    public CombatReactionZone ReactionZone => reactionZone;
     public float DamageMultiplier => damageMultiplier;
     public Health OwnerHealth => ownerHealth;
 
