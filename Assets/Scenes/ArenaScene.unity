@@ -637,7 +637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01bb0731ddf9db843be1a40207473113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 100000
 --- !u!1 &394494059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4577,7 +4577,7 @@ PrefabInstance:
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4906,6 +4906,16 @@ MonoBehaviour:
   leftPunchRotationOffset: {x: 30, y: 120, z: 40}
   leftGloveHitboxRoot: {fileID: 1950826550}
   rightGloveHitboxRoot: {fileID: 2093904549}
+  guardImpactImpulse: 0.1
+  guardImpactMaxOffset: 0.05
+  guardImpactSpring: 70
+  guardImpactDamping: 12
+  leftGuardImpactRoots:
+  - {fileID: 1950826550}
+  - {fileID: 1146670167}
+  rightGuardImpactRoots:
+  - {fileID: 2093904549}
+  - {fileID: 1781544344}
 --- !u!114 &1386887580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5994,6 +6004,11 @@ MonoBehaviour:
   bodyDamping: 8
   debugReactionType: 0
   testReaction: 0
+  frontHeadColliders:
+  - {fileID: 1732827545}
+  - {fileID: 1732827547}
+  backHeadColliders:
+  - {fileID: 1732827544}
 --- !u!1 &1856427716
 GameObject:
   m_ObjectHideFlags: 0

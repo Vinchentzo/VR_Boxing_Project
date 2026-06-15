@@ -34,6 +34,10 @@ public class EnemyHitReaction : MonoBehaviour
     [SerializeField] private DebugReactionType debugReactionType;
     [SerializeField] private bool testReaction;
 
+    [Header("Head Hit Regions")]
+    [SerializeField] private Collider[] frontHeadColliders;
+    [SerializeField] private Collider[] backHeadColliders;
+
     private Vector3 headOffset;
     private Vector3 headVelocity;
 
@@ -72,48 +76,72 @@ public class EnemyHitReaction : MonoBehaviour
         ClampOffset(ref bodyOffset, bodyMaxAngle);
     }
 
-    public void ReactToHeadFrontHit()
+    public void ReactToHeadFrontHit(float strength = 1f)
     {
         // Front face hit: head goes slightly backward.
-        AddHeadImpulse(new Vector3(-8f, 0f, 0f));
+        AddHeadImpulse(new Vector3(-8f, 0f, 0f) * strength);
     }
 
-    public void ReactToHeadFrontLeftHit()
+    public void ReactToHeadFrontLeftHit(float strength = 1f)
     {
-        AddHeadImpulse(new Vector3(0f, -8f, 3f));
+        AddHeadImpulse(new Vector3(0f, -8f, 3f) * strength);
     }
 
-    public void ReactToHeadFrontRightHit()
+    public void ReactToHeadFrontRightHit(float strength = 1f)
     {
-        AddHeadImpulse(new Vector3(0f, 8f, -3f));
+        AddHeadImpulse(new Vector3(0f, 8f, -3f) * strength);
     }
 
-    public void ReactToHeadBackLeftHit()
+    public void ReactToHeadBackLeftHit(float strength = 1f)
     {
-        AddHeadImpulse(new Vector3(0f, 0f, 8f));
+        AddHeadImpulse(new Vector3(0f, 0f, 8f) * strength);
     }
 
-    public void ReactToHeadBackRightHit()
+    public void ReactToHeadBackRightHit(float strength = 1f)
     {
-        AddHeadImpulse(new Vector3(0f, 0f, -8f));
+        AddHeadImpulse(new Vector3(0f, 0f, -8f) * strength);
     }
 
-    public void ReactToBodyFrontHit()
+    public void ReactToBodyFrontHit(float strength = 1f)
     {
         // Body curls forward slightly.
-        AddBodyImpulse(new Vector3(10f, 0f, 0f));
+        AddBodyImpulse(new Vector3(10f, 0f, 0f) * strength);
     }
 
-    public void ReactToBodyLeftHit()
+    public void ReactToBodyLeftHit(float strength = 1f)
     {
-        // Side abdomen/rib hit: curl forward and bend left, with no torso twist.
-        AddBodyImpulse(new Vector3(7f, 0f, -8f));
+        // Side abdomen/rib hit: curl forward and bend left.
+        AddBodyImpulse(new Vector3(7f, 0f, -8f) * strength);
     }
 
-    public void ReactToBodyRightHit()
+    public void ReactToBodyRightHit(float strength = 1f)
     {
-        // Side abdomen/rib hit: curl forward and bend right, with no torso twist.
-        AddBodyImpulse(new Vector3(7f, 0f, 8f));
+        // Side abdomen/rib hit: curl forward and bend right.
+        AddBodyImpulse(new Vector3(7f, 0f, 8f) * strength);
+    }
+
+    public bool IsFrontHeadCollider(Collider hitCollider)
+    {
+        return ContainsCollider(frontHeadColliders, hitCollider);
+    }
+
+    public bool IsBackHeadCollider(Collider hitCollider)
+    {
+        return ContainsCollider(backHeadColliders, hitCollider);
+    }
+
+    private bool ContainsCollider(Collider[] colliders, Collider target)
+    {
+        if (target == null || colliders == null)
+            return false;
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider == target)
+                return true;
+        }
+
+        return false;
     }
 
     private void HandleDebugTest()

@@ -9,9 +9,12 @@ public class PlayerGloveContactReporter : MonoBehaviour
     [SerializeField] private float contactCooldown = 0.15f;
 
     [Header("Enemy Reaction Selection")]
-    [SerializeField] private float bodySideThreshold = 0.10f;
-    [SerializeField] private float headSideThreshold = 0.04f;
-    [SerializeField] private float headFrontZThreshold = 0.22f;
+    [SerializeField] private float minimumSideReactionVelocity = 1.5f;
+    [SerializeField] private float sideReactionDominance = 1.2f;
+    [SerializeField] private float reactionMinSpeed = 1.0f;
+    [SerializeField] private float reactionMaxSpeed = 5.0f;
+    [SerializeField] private float minimumReactionStrength = 0.75f;
+    [SerializeField] private float maximumReactionStrength = 1.45f;
 
     private HandVelocityTracker handVelocityTracker;
     private PlayerPunchState punchState;
@@ -57,11 +60,16 @@ public class PlayerGloveContactReporter : MonoBehaviour
         nextAllowedContactTime = Time.time + contactCooldown;
 
         float damage = resolver.CalculatePlayerPunchDamage(result, surface, punchSpeed);
+        float reactionStrength = CalculateReactionStrength(punchSpeed);
 
         if (damage > 0f)
         {
             surface.OwnerHealth.TakeDamage(damage);
-            ApplyEnemyReaction(result, surface, other);
+            ApplyEnemyReaction(result, surface, other, reactionStrength);
+        }
+        else if (result == CombatContactResult.Blocked)
+        {
+            ApplyEnemyGuardReaction(surface, other, reactionStrength);
         }
 
         Debug.Log(
@@ -70,10 +78,38 @@ public class PlayerGloveContactReporter : MonoBehaviour
         );
     }
 
+    private void ApplyEnemyGuardReaction(
+    CombatSurface surface,
+    Collider hitCollider,
+    float reactionStrength
+)
+    {
+        if (surface == null || surface.OwnerHealth == null)
+            return;
+
+        EnemyGuardTargetFollower guardFollower =
+            surface.OwnerHealth.GetComponentInChildren<EnemyGuardTargetFollower>();
+
+        if (guardFollower == null)
+            return;
+
+        Transform enemyRoot = surface.OwnerHealth.transform;
+        Vector3 localVelocity = enemyRoot.InverseTransformDirection(handVelocityTracker.Velocity);
+
+        guardFollower.AddGuardImpact(hitCollider, localVelocity, reactionStrength);
+    }
+
+    private float CalculateReactionStrength(float punchSpeed)
+    {
+        float t = Mathf.InverseLerp(reactionMinSpeed, reactionMaxSpeed, punchSpeed);
+        return Mathf.Lerp(minimumReactionStrength, maximumReactionStrength, t);
+    }
+
     private void ApplyEnemyReaction(
     CombatContactResult result,
     CombatSurface surface,
-    Collider hitCollider
+    Collider hitCollider,
+    float reactionStrength
 )
     {
         if (surface == null || surface.OwnerHealth == null)
@@ -84,13 +120,23 @@ public class PlayerGloveContactReporter : MonoBehaviour
         if (hitReaction == null)
             return;
 
-        Vector3 hitPoint = hitCollider.ClosestPoint(transform.position);
-        Vector3 localHit = surface.OwnerHealth.transform.InverseTransformPoint(hitPoint);
+        Transform enemyRoot = surface.OwnerHealth.transform;
 
-        Debug.Log(
-            $"Enemy reaction debug: result={result}, surface={surface.SurfaceType}, collider={hitCollider.name}, localHit={localHit}",
-            hitCollider
-        );
+        Vector3 hitPoint = hitCollider.ClosestPoint(transform.position);
+        Vector3 localHit = enemyRoot.InverseTransformPoint(hitPoint);
+
+        // This is the center/position of your glove hitbox relative to the enemy.
+        // It may be better for deciding left/right than ClosestPoint.
+        Vector3 localGlove = enemyRoot.InverseTransformPoint(transform.position);
+
+        // This is the punch movement direction relative to the enemy.
+        Vector3 localVelocity = enemyRoot.InverseTransformDirection(handVelocityTracker.Velocity);
+
+        //Debug.Log(
+        //    $"Enemy reaction debug: result={result}, surface={surface.SurfaceType}, collider={hitCollider.name}, " +
+        //    $"localHit={localHit}, localGlove={localGlove}, localVelocity={localVelocity}",
+        //    hitCollider
+        //);
 
         // Manual override/fallback if you set Reaction Zone in the Inspector later.
         if (surface.ReactionZone != CombatReactionZone.None)
@@ -102,53 +148,79 @@ public class PlayerGloveContactReporter : MonoBehaviour
         switch (result)
         {
             case CombatContactResult.HeadHit:
-                ApplyHeadReaction(hitReaction, localHit);
+                ApplyHeadReaction(hitReaction, localVelocity, hitCollider, reactionStrength);
                 break;
 
             case CombatContactResult.BodyHit:
-                ApplyBodyReaction(hitReaction, localHit);
+                ApplyBodyReaction(hitReaction, localVelocity, reactionStrength);
                 break;
         }
     }
 
-    private void ApplyHeadReaction(EnemyHitReaction hitReaction, Vector3 localHit)
+    private void ApplyHeadReaction(
+    EnemyHitReaction hitReaction,
+    Vector3 localVelocity,
+    Collider hitCollider,
+    float strength
+)
     {
-        // Enemy right side is negative local X.
-        // Check side FIRST, otherwise side/front punches can be incorrectly classified as front.
-        if (localHit.x <= -headSideThreshold)
+        bool isSidePunch = IsDominantSidePunch(localVelocity);
+        bool isBackHeadHit = hitReaction.IsBackHeadCollider(hitCollider);
+
+        if (!isSidePunch)
         {
-            hitReaction.ReactToHeadFrontRightHit();
+            hitReaction.ReactToHeadFrontHit(strength);
             return;
         }
 
-        // Enemy left side is positive local X.
-        if (localHit.x >= headSideThreshold)
+        // From your logs:
+        // localVelocity.x > 0 means punch comes from enemy right side.
+        if (localVelocity.x > 0f)
         {
-            hitReaction.ReactToHeadFrontLeftHit();
+            if (isBackHeadHit)
+                hitReaction.ReactToHeadBackRightHit(strength);
+            else
+                hitReaction.ReactToHeadFrontRightHit(strength);
+
             return;
         }
 
-        // If it is not clearly left/right, treat it as a front face hit.
-        hitReaction.ReactToHeadFrontHit();
+        if (isBackHeadHit)
+            hitReaction.ReactToHeadBackLeftHit(strength);
+        else
+            hitReaction.ReactToHeadFrontLeftHit(strength);
     }
 
-    private void ApplyBodyReaction(EnemyHitReaction hitReaction, Vector3 localHit)
+    private void ApplyBodyReaction(
+    EnemyHitReaction hitReaction,
+    Vector3 localVelocity,
+    float strength
+)
     {
-        // Enemy right side is negative local X.
-        if (localHit.x <= -bodySideThreshold)
+        if (IsDominantSidePunch(localVelocity))
         {
-            hitReaction.ReactToBodyRightHit();
+            // From your logs:
+            // localVelocity.x > 0 means punch comes from enemy right side.
+            if (localVelocity.x > 0f)
+            {
+                hitReaction.ReactToBodyRightHit(strength);
+                return;
+            }
+
+            hitReaction.ReactToBodyLeftHit(strength);
             return;
         }
 
-        // Enemy left side is positive local X.
-        if (localHit.x >= bodySideThreshold)
-        {
-            hitReaction.ReactToBodyLeftHit();
-            return;
-        }
+        hitReaction.ReactToBodyFrontHit(strength);
+    }
 
-        hitReaction.ReactToBodyFrontHit();
+    private bool IsDominantSidePunch(Vector3 localVelocity)
+    {
+        float sideSpeed = Mathf.Abs(localVelocity.x);
+        float forwardSpeed = Mathf.Abs(localVelocity.z);
+
+        return sideSpeed >= minimumSideReactionVelocity &&
+               sideSpeed >= forwardSpeed * sideReactionDominance;
     }
 
     private void ApplyReactionZone(EnemyHitReaction hitReaction, CombatReactionZone reactionZone)

@@ -10,6 +10,13 @@ public class EnemyGuardTargetFollower : MonoBehaviour
         RightCross
     }
 
+    private enum GuardImpactSide
+    {
+        None,
+        Left,
+        Right
+    }
+
     [Header("References")]
     [SerializeField] private Transform bodyRoot;
     [SerializeField] private Transform head;
@@ -108,6 +115,16 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     [SerializeField] private Transform leftGloveHitboxRoot;
     [SerializeField] private Transform rightGloveHitboxRoot;
 
+    [Header("Guard Impact Reaction")]
+    [SerializeField] private float guardImpactImpulse = 0.18f;
+    [SerializeField] private float guardImpactMaxOffset = 0.12f;
+    [SerializeField] private float guardImpactSpring = 90f;
+    [SerializeField] private float guardImpactDamping = 14f;
+
+    [Header("Guard Impact Hitboxes")]
+    [SerializeField] private Transform[] leftGuardImpactRoots;
+    [SerializeField] private Transform[] rightGuardImpactRoots;
+
     private float attackTimer;
     private bool attackActive;
     private bool attackBlocked;
@@ -118,6 +135,11 @@ public class EnemyGuardTargetFollower : MonoBehaviour
     private float attackBlockedRotationInfluence;
     private CapsuleCollider[] leftGloveCapsules;
     private CapsuleCollider[] rightGloveCapsules;
+
+    private Vector3 leftGuardImpactOffset;
+    private Vector3 leftGuardImpactVelocity;
+    private Vector3 rightGuardImpactOffset;
+    private Vector3 rightGuardImpactVelocity;
 
     private void Awake()
     {
@@ -256,16 +278,24 @@ public class EnemyGuardTargetFollower : MonoBehaviour
             return;
 
         Vector3 rightGuardPosition = GetPosition(
-            rightSideOffset,
-            rightForwardOffset,
-            rightDownOffset
-        );
+    rightSideOffset,
+    rightForwardOffset,
+    rightDownOffset
+);
 
         Vector3 leftGuardPosition = GetPosition(
             leftSideOffset,
             leftForwardOffset,
             leftDownOffset
         );
+
+        // Update the spring offsets caused by the player hitting the enemy guard.
+        UpdateGuardImpactSpring();
+
+        Transform guardSpace = bodyRoot != null ? bodyRoot : transform;
+
+        rightGuardPosition += guardSpace.TransformVector(rightGuardImpactOffset);
+        leftGuardPosition += guardSpace.TransformVector(leftGuardImpactOffset);
 
         Vector3 rightTargetPosition = rightGuardPosition;
         Vector3 leftTargetPosition = leftGuardPosition;
@@ -1025,5 +1055,98 @@ public class EnemyGuardTargetFollower : MonoBehaviour
         float retractT = retractTimer / retractTime;
 
         return 1f - Smooth01(retractT);
+    }
+
+    public void AddGuardImpact(Collider hitCollider, Vector3 localPunchVelocity, float strength)
+    {
+        // Guard bump is only for idle/guard state, not while the enemy is attacking.
+        if (attackActive)
+            return;
+
+        if (hitCollider == null)
+            return;
+
+        if (localPunchVelocity.sqrMagnitude < 0.0001f)
+            return;
+
+        GuardImpactSide side = GetGuardImpactSide(hitCollider);
+
+        if (side == GuardImpactSide.None)
+            return;
+
+        Vector3 localDirection = localPunchVelocity.normalized;
+
+        // Reduce vertical movement. Guard should mostly move backward/sideways, not fly up/down.
+        localDirection.y *= 0.25f;
+
+        Vector3 impulse = localDirection * guardImpactImpulse * Mathf.Max(0f, strength);
+
+        if (side == GuardImpactSide.Right)
+        {
+            //rightGuardImpactOffset += impulse * 0.35f;
+            rightGuardImpactVelocity += impulse * 8f;
+
+            if (rightGuardImpactOffset.magnitude > guardImpactMaxOffset)
+                rightGuardImpactOffset = rightGuardImpactOffset.normalized * guardImpactMaxOffset;
+        }
+        else if (side == GuardImpactSide.Left)
+        {
+            //leftGuardImpactOffset += impulse * 0.35f;
+            leftGuardImpactVelocity += impulse * 8f;
+
+            if (leftGuardImpactOffset.magnitude > guardImpactMaxOffset)
+                leftGuardImpactOffset = leftGuardImpactOffset.normalized * guardImpactMaxOffset;
+        }
+    }
+
+    private void UpdateGuardImpactSpring()
+    {
+        UpdateGuardImpactSpring(ref leftGuardImpactOffset, ref leftGuardImpactVelocity);
+        UpdateGuardImpactSpring(ref rightGuardImpactOffset, ref rightGuardImpactVelocity);
+    }
+
+    private void UpdateGuardImpactSpring(ref Vector3 offset, ref Vector3 velocity)
+    {
+        float dt = Time.deltaTime;
+
+        velocity += -offset * guardImpactSpring * dt;
+        velocity *= Mathf.Exp(-guardImpactDamping * dt);
+
+        offset += velocity * dt;
+
+        if (offset.magnitude > guardImpactMaxOffset)
+        {
+            offset = offset.normalized * guardImpactMaxOffset;
+        }
+    }
+
+    private GuardImpactSide GetGuardImpactSide(Collider hitCollider)
+    {
+        if (IsColliderUnderAnyRoot(hitCollider, rightGuardImpactRoots))
+            return GuardImpactSide.Right;
+
+        if (IsColliderUnderAnyRoot(hitCollider, leftGuardImpactRoots))
+            return GuardImpactSide.Left;
+
+        return GuardImpactSide.None;
+    }
+
+    private bool IsColliderUnderAnyRoot(Collider hitCollider, Transform[] roots)
+    {
+        if (hitCollider == null || roots == null)
+            return false;
+
+        Transform hitTransform = hitCollider.transform;
+
+        foreach (Transform root in roots)
+        {
+            if (root == null)
+                continue;
+
+            if (hitTransform == root || hitTransform.IsChildOf(root))
+                return true;
+        }
+
+        return false;
     }
 }
